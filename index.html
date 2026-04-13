@@ -377,7 +377,7 @@
       <div class="feature"><div class="feature-icon">🔒</div><h4>بيانات محلية</h4><p>100% خصوصية، لا خوادم ولا إعلانات</p></div>
     </div>
 
-    <!-- Download Section with Checksums -->
+    <!-- Download Section with Checksums & Parent Password Info -->
     <div class="download-section">
       <h2>📥 تحميل التطبيق</h2>
       <p>حر ومجاني — يعمل بدون إنترنت — يمكن للوالدين إضافة محتوى دون انتظار تحديثات</p>
@@ -391,10 +391,19 @@
         <strong>APK SHA256:</strong> b1a276aa2dfb6fe24a60feeca2747c97dc87ce09e5fa18cbaac322ae96e6f681
       </div>
       <p style="margin-top: 1rem; font-size: 0.85rem;">📌 ملاحظة: تطبيق أندرويد يتطلب تفعيل "مصادر غير معروفة" من إعدادات الجهاز.</p>
+      <div style="margin-top: 1.2rem; background: rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 16px; display: inline-block;">
+        🛡️ <strong>لدخول لوحة الوالدين:</strong> استخدم كلمة المرور <code style="background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 20px;">admin</code> (يمكنك تغييرها بعد الدخول من الإعدادات).
+      </div>
     </div>
 
-    <!-- Detailed Description -->
+    <!-- Detailed Description with Parent Password Card -->
     <div class="cards">
+      <div class="card">
+        <div class="card-icon">🔑</div>
+        <h3>كلمة مرور الوالدين</h3>
+        <p>الافتراضية: <strong>admin</strong> — يمكنك تغييرها بسهولة من داخل لوحة التحكم بعد الدخول.</p>
+        <small>سؤال استرداد مخصص لاستعادة الوصول إذا نسيتها.</small>
+      </div>
       <div class="card"><div class="card-icon">✏️</div><h3>تحكم كامل للوالدين</h3><p>أضف قصصاً وأسئلة وألغازاً خاصة بك — دون انتظار تحديثات البرنامج. لوحة تحكم متكاملة مع وقت لعب يومي، قفل أقسام، نسخ احتياطي، واسترداد كلمة مرور.</p></div>
       <div class="card"><div class="card-icon">💾</div><h3>نسخ احتياطي شامل</h3><p>تصدير واستيراد بيانات الأطفال والمحتوى المخصص بملف JSON — انقل إعداداتك بين الأجهزة بسهولة.</p></div>
       <div class="card"><div class="card-icon">🔐</div><h3>أمان تام</h3><p>كلمة مرور للوالدين، سؤال استرداد مخصص، تراجع عن الحذف (10 ثوانٍ)، ووقت لعب محدد لكل طفل.</p></div>
@@ -462,10 +471,8 @@
       bubble.style.animationDelay = `${delay}s`;
       bubble.style.setProperty('--duration', duration);
       bubble.style.setProperty('--delay', delay);
-      // Store animation state
       bubble._animDuration = duration;
       bubble._animDelay = delay;
-      bubble._baseBottom = parseFloat(bubble.style.bottom);
       container.appendChild(bubble);
       bubbles.push(bubble);
     }
@@ -481,31 +488,26 @@
     document.head.appendChild(styleSheet);
 
     // Mouse interaction: move bubbles away from cursor
-    let mouseX = 0, mouseY = 0;
     let mouseMoving = false;
     let timeout;
 
     document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
       mouseMoving = true;
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         mouseMoving = false;
-        // Return bubbles to original animation
         bubbles.forEach(bubble => {
           bubble.style.animation = `floatUp ${bubble._animDuration}s linear infinite`;
           bubble.style.animationDelay = `${bubble._animDelay}s`;
         });
       }, 500);
 
-      // Push bubbles away
       bubbles.forEach(bubble => {
         const rect = bubble.getBoundingClientRect();
         const bubbleX = rect.left + rect.width/2;
         const bubbleY = rect.top + rect.height/2;
-        const dx = bubbleX - mouseX;
-        const dy = bubbleY - mouseY;
+        const dx = bubbleX - e.clientX;
+        const dy = bubbleY - e.clientY;
         const dist = Math.sqrt(dx*dx + dy*dy);
         const maxDist = 150;
         if (dist < maxDist) {
@@ -513,7 +515,6 @@
           const force = (maxDist - dist) / maxDist;
           const pushX = Math.cos(angle) * force * 50;
           const pushY = Math.sin(angle) * force * 50;
-          // Temporarily pause animation and apply transform
           bubble.style.animation = 'none';
           bubble.style.transform = `translate(${pushX}px, ${pushY}px)`;
           setTimeout(() => {
@@ -528,7 +529,7 @@
     });
 
     // ========================
-    // 3. Smooth scroll and extra polish
+    // 3. Smooth scroll
     // ========================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
