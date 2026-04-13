@@ -1,0 +1,18 @@
+appId: com.gnutux.gtsararim
+productName: GT-SARARIM
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - main.js
+  - fonts/**/*
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Education
+  icon: public/GT-SARARIM-ICON.png
+  maintainer: SalehGNUTUX <salehoukiki@gmail.com>
+deb:
+  priority: optional

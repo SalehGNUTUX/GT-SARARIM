@@ -1,0 +1,17 @@
+{
+  "name": "GT-SARARIM",
+  "short_name": "SARARIM",
+  "description": "تطبيق تعليمي تفاعلي للأطفال المسلمين",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#FF6B6B",
+  "background_color": "#FDFCF0",
+  "icons": [
+    {
+      "src": "/GT-SARARIM-ICON.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "appId": "com.gnutux.gtsararim",
+  "productName": "GT-SARARIM",
+  "copyright": "GNUTUX — GPL-3.0",
+  "directories": {
+    "output": "release",
+    "buildResources": "build"
+  },
+  "files": [
+    "dist/**/*",
+    "main.js",
+    "!dist/**/*.map"
+  ],
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "deb",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "category": "Education",
+    "icon": "public/GT-SARARIM-ICON.png",
+    "maintainer": "SalehGNUTUX <salehoukiki@gmail.com>",
+    "synopsis": "تطبيق تعليمي تفاعلي للأطفال المسلمين",
+    "description": "GT-SARARIM — برنامج تعليمي ترفيهي للأطفال يعمل بالكامل بدون إنترنت"
+  },
+  "deb": {
+    "priority": "optional",
+    "depends": [
+      "libgtk-3-0",
+      "libnotify4",
+      "libnss3",
+      "libxss1",
+      "libxtst6",
+      "xdg-utils",
+      "libatspi2.0-0",
+      "libuuid1"
+    ]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "icon": "public/GT-SARARIM-ICON.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "public/GT-SARARIM-ICON.png",
+    "uninstallerIcon": "public/GT-SARARIM-ICON.png"
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ],
+    "icon": "public/GT-SARARIM-ICON.png",
+    "category": "public.app-category.education"
+  },
+  "appImage": {
+    "license": "LICENSE"
+  }
+}
