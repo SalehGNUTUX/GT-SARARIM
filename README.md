@@ -1,19 +1,21 @@
+<div dir="rtl" style="font-family: 'Cairo', 'Tajawal', sans-serif;">
+
 <div align="center">
-  <img src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png" alt="GT-SARARIM Logo" width="120" style="border-radius: 24px;">
-  <h1>🌟 GT-SARARIM — سارة ريم</h1>
+  <img src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png" alt="شعار GT-SARARIM" width="120" style="border-radius: 24px;">
+  <h1 style="font-family: 'Cairo', sans-serif;">🌟 GT-SARARIM — سارة ريم</h1>
   <p><strong>تطبيق تعليمي تفاعلي للطفل العربي المسلم</strong><br>
   يعمل بالكامل بدون إنترنت · حر ومجاني · مفتوح المصدر</p>
   <p>
-    <a href="https://salehgnutux.github.io/GT-SARARIM/web/"><img src="https://img.shields.io/badge/🌐_تشغيل_النسخة_مباشرة-الويب-4CAF50?style=for-the-badge" alt="تشغيل الويب"></a>
-    <a href="#-تحميل-التطبيق"><img src="https://img.shields.io/badge/🐧_تحميل_لينكس-FF9F43?style=for-the-badge" alt="تحميل لينكس"></a>
-    <a href="#-تحميل-التطبيق"><img src="https://img.shields.io/badge/📱_تحميل_أندرويد-4CAF50?style=for-the-badge" alt="تحميل أندرويد"></a>
+    <a href="https://salehgnutux.github.io/GT-SARARIM/web/"><img src="https://img.shields.io/badge/🌐_تشغيل_النسخة_مباشرة-الويب-4CAF50?style=for-the-badge" alt="الويب"></a>
+    <a href="#-تحميل-التطبيق"><img src="https://img.shields.io/badge/🐧_تحميل_لينكس-FF9F43?style=for-the-badge" alt="لينكس"></a>
+    <a href="#-تحميل-التطبيق"><img src="https://img.shields.io/badge/📱_تحميل_أندرويد-4CAF50?style=for-the-badge" alt="أندرويد"></a>
     <a href="https://github.com/SalehGNUTUX/GT-SARARIM"><img src="https://img.shields.io/badge/🐙_GitHub-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
   </p>
   <p>
-    <img src="https://img.shields.io/badge/🆓_حر_ومجاني-GPL--3.0-blue" alt="License">
-    <img src="https://img.shields.io/badge/📖_قصص_مشكّلة-8+-orange" alt="Stories">
-    <img src="https://img.shields.io/badge/🎮_أنشطة_تفاعلية-4-brightgreen" alt="Activities">
-    <img src="https://img.shields.io/badge/🔒_100%25_أوف_لاين-Yes-green" alt="Offline">
+    <img src="https://img.shields.io/badge/🆓_حر_ومجاني-GPL--3.0-blue" alt="الرخصة">
+    <img src="https://img.shields.io/badge/📖_قصص_مشكّلة-8+-orange" alt="القصص">
+    <img src="https://img.shields.io/badge/🎮_أنشطة_تفاعلية-4-brightgreen" alt="الأنشطة">
+    <img src="https://img.shields.io/badge/🔒_100%25_أوف_لاين-نعم-green" alt="أوف لاين">
   </p>
 </div>
 
@@ -30,7 +32,7 @@
 - 👨‍👩‍👧 **تحكم كامل للوالدين** (إضافة محتوى، وقت لعب، قفل أقسام، نسخ احتياطي)
 - 🌙 **وضع فاتح/داكن** يكتشف تلقائياً إعدادات النظام
 
-> **فكرة فريدة**: يمكن للوالدين إضافة قصصهم وأسئلتهم وألغازهم الخاصة دون انتظار تحديثات التطبيق — كل ذلك عبر لوحة تحكم سهلة الاستخدام.
+> **فكرة فريدة**: يمكن للوالدين إضافة قصصهم وأسئلتهم وألغازهم الخاصة **دون انتظار تحديثات التطبيق** — كل ذلك عبر لوحة تحكم سهلة الاستخدام.
 
 ---
 
@@ -87,27 +89,15 @@ npm run dev
 
 ---
 
-## 🛠️ بناء التطبيق بنفسك
+## 🛡️ لوحة تحكم الوالدين
 
-### بناء لينكس (AppImage + deb)
-```bash
-npm run pack:linux
-# النتيجة في مجلد release/
-```
+- **الدخول:** كلمة المرور الافتراضية `admin` (يمكن تغييرها بعد الدخول من الإعدادات)
+- **إدارة الأبناء:** إضافة حسابات، صور، كلمات مرور، وقت لعب يومي
+- **إدارة المحتوى:** إضافة/تعديل/حذف القصص، الأسئلة، الألغاز، الفئات
+- **الأمان:** قفل أقسام، تراجع عن الحذف (10 ثوانٍ)، سؤال استرداد كلمة المرور
+- **النسخ الاحتياطي:** تصدير واستيراد البيانات كاملة (JSON)
 
-### بناء أندرويد (APK)
-```bash
-npm run android:setup   # مرة واحدة
-npm run android:debug   # APK تجريبي
-# أو
-npm run android:build   # APK نهائي (يتطلب توقيع)
-```
-
-### بناء نسخة الويب
-```bash
-npm run build
-# محتويات مجلد dist/ هي الموقع الجاهز للنشر
-```
+> ⚠️ **هام:** كلمة المرور الافتراضية للوالدين هي `admin`. يُنصح بتغييرها فور الدخول الأول من خلال إعدادات لوحة التحكم.
 
 ---
 
@@ -137,15 +127,27 @@ npm run build
 
 ---
 
-## 🛡️ لوحة تحكم الوالدين
+## 🛠️ بناء التطبيق بنفسك
 
-- **الدخول:** كلمة المرور الافتراضية `admin` (قابلة للتغيير)
-- **إدارة الأبناء:** إضافة حسابات، صور، كلمات مرور، وقت لعب يومي
-- **إدارة المحتوى:** إضافة/تعديل/حذف القصص، الأسئلة، الألغاز، الفئات
-- **الأمان:** قفل أقسام، تراجع عن الحذف (10 ثوانٍ)، سؤال استرداد كلمة المرور
-- **النسخ الاحتياطي:** تصدير واستيراد البيانات كاملة (JSON)
+### بناء لينكس (AppImage + deb)
+```bash
+npm run pack:linux
+# النتيجة في مجلد release/
+```
 
-> ✨ **أهم ميزة**: يمكن للوالدين إضافة قصص وأسئلة وألغاز جديدة **دون انتظار تحديثات التطبيق** — كل ما يضيفه يظهر فوراً للأطفال.
+### بناء أندرويد (APK)
+```bash
+npm run android:setup   # مرة واحدة
+npm run android:debug   # APK تجريبي
+# أو
+npm run android:build   # APK نهائي (يتطلب توقيع)
+```
+
+### بناء نسخة الويب
+```bash
+npm run build
+# محتويات مجلد dist/ هي الموقع الجاهز للنشر
+```
 
 ---
 
@@ -187,4 +189,6 @@ npm run build
   <p>صُنع بـ ❤️ للطفل العربي المسلم</p>
   <p>يعمل بدون إنترنت · بتحكم كامل للوالدين · ومحتوى قابل للإضافة دون انتظار تحديثات</p>
   <p>🌟 <strong>سارة ريم — عالم المعرفة والمرح</strong> 🌟</p>
+</div>
+
 </div>
