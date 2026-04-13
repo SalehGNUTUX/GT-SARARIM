@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GT-SARARIM — سارة ريم عالم المعرفة والمرح</title>
+<meta name="description" content="تطبيق تعليمي تفاعلي للطفل العربي المسلم — قصص وألغاز وأنشطة ممتعة بدون إنترنت"/>
+<meta property="og:title" content="GT-SARARIM سارة ريم"/>
+<meta property="og:description" content="عالم تعليمي ممتع للأطفال — يعمل بدون إنترنت"/>
+<meta property="og:url" content="https://salehgnutux.github.io/GT-SARARIM"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ════════ Variables ════════ */
+:root {
+  --red:    #FF6B6B;
+  --orange: #FF9F43;
+  --green:  #4CAF50;
+  --blue:   #54A0FF;
+  --purple: #A29BFE;
+  --gold:   #FFD700;
+  --dark:   #1A1A2E;
+  --cream:  #FFFBF0;
+  --ink:    #2D3436;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+  direction: rtl;
+}
+
+/* ════════ Stars Background ════════ */
+.stars-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: twinkle var(--d) ease-in-out infinite var(--delay);
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.1; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.4); }
+}
+
+/* ════════ Floating Shapes ════════ */
+.floats {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.float-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.07;
+  animation: floatUp var(--fd) ease-in-out infinite alternate var(--fdelay);
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-30px) rotate(15deg); }
+}
+
+/* ════════ Nav ════════ */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,251,240,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 2px solid #FFE0B2;
+  padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(255,107,107,0.08);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 22px; font-weight: 900; color: var(--red);
+  text-decoration: none;
+}
+.nav-logo img {
+  width: 42px; height: 42px; border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255,107,107,0.3);
+}
+.nav-links {
+  display: flex; gap: 6px; list-style: none;
+}
+.nav-links a {
+  text-decoration: none; color: var(--ink);
+  font-weight: 600; font-size: 15px;
+  padding: 6px 14px; border-radius: 20px;
+  transition: all .2s;
+}
+.nav-links a:hover {
+  background: var(--orange); color: white;
+}
+.nav-cta {
+  background: var(--red); color: white !important;
+  padding: 8px 20px !important; border-radius: 20px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(255,107,107,0.35);
+}
+.nav-cta:hover { background: #ee5253 !important; transform: translateY(-2px); }
+
+/* ════════ Hero ════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #FFF5E6 0%, #FFF0F8 40%, #F0F8FF 100%);
+  padding: 80px 24px 60px;
+  overflow: hidden;
+}
+.hero-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: pulse 4s ease-in-out infinite alternate;
+}
+@keyframes pulse {
+  0%   { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.1); opacity: 0.7; }
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center; max-width: 760px;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; border: 2px solid #FFE0B2;
+  border-radius: 50px; padding: 6px 18px;
+  font-size: 14px; font-weight: 700; color: var(--orange);
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(255,159,67,0.15);
+  animation: slideDown .6s ease;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+
+.hero-icon-ring {
+  width: 160px; height: 160px; margin: 0 auto 24px;
+  position: relative;
+  animation: heroFloat 3s ease-in-out infinite;
+}
+@keyframes heroFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+.hero-icon-ring img {
+  width: 140px; height: 140px; border-radius: 36px;
+  box-shadow: 0 20px 60px rgba(255,107,107,0.4), 0 0 0 12px rgba(255,107,107,0.1);
+  display: block; margin: 0 auto;
+}
+.hero-ring-orbit {
+  position: absolute; inset: -16px;
+  border: 3px dashed rgba(255,107,107,0.3);
+  border-radius: 50%;
+  animation: orbit 8s linear infinite;
+}
+@keyframes orbit { to { transform: rotate(360deg); } }
+.hero-ring-dot {
+  position: absolute; width: 14px; height: 14px;
+  border-radius: 50%; top: -5px; left: 50%; transform: translateX(-50%);
+}
+
+.hero h1 {
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 900; line-height: 1.1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--red) 0%, var(--orange) 50%, #FF6B6B 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeUp .7s .1s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+.hero-sub {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 800; color: var(--ink);
+  margin-bottom: 16px;
+  animation: fadeUp .7s .2s ease both;
+}
+.hero-tagline {
+  font-size: 18px; color: #636E72; font-weight: 500; line-height: 1.7;
+  max-width: 560px; margin: 0 auto 40px;
+  animation: fadeUp .7s .3s ease both;
+}
+.hero-btns {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  justify-content: center;
+  animation: fadeUp .7s .4s ease both;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px; border-radius: 50px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 16px; font-weight: 800;
+  text-decoration: none; cursor: pointer; border: none;
+  transition: all .25s; white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--red), #ee5253);
+  color: white;
+  box-shadow: 0 8px 24px rgba(255,107,107,0.4);
+}
+.btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 40px rgba(255,107,107,0.5); }
+
+.btn-linux {
+  background: linear-gradient(135deg, var(--orange), #e67e22);
+  color: white; box-shadow: 0 8px 24px rgba(255,159,67,0.35);
+}
+.btn-linux:hover { transform: translateY(-4px) scale(1.03); }
+
+.btn-android {
+  background: linear-gradient(135deg, var(--green), #27ae60);
+  color: white; box-shadow: 0 8px 24px rgba(76,175,80,0.35);
+}
+.btn-android:hover { transform: translateY(-4px) scale(1.03); }
+
+.btn-outline {
+  background: white; color: var(--ink);
+  border: 2px solid #E5E5E5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-3px); }
+
+/* hero stats */
+.hero-stats {
+  display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  margin-top: 52px; padding-top: 32px;
+  border-top: 2px dashed #FFE0B2;
+  animation: fadeUp .7s .5s ease both;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-size: 36px; font-weight: 900;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-lbl { font-size: 14px; color: #636E72; font-weight: 600; margin-top: 2px; }
+
+/* hero scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: 13px; color: #B2BEC3; font-weight: 600;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+/* ════════ Section Base ════════ */
+section { position: relative; padding: 80px 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; border: 2px solid currentColor;
+  border-radius: 50px; padding: 6px 16px;
+  font-size: 13px; font-weight: 800; letter-spacing: .5px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900; line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-desc {
+  font-size: 18px; color: #636E72; font-weight: 500;
+  max-width: 580px; line-height: 1.7;
+}
+
+/* ════════ Features Grid ════════ */
+#features { background: white; }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; margin-top: 52px;
+}
+.feat-card {
+  background: var(--cream);
+  border-radius: 28px;
+  padding: 32px 28px;
+  border: 2px solid transparent;
+  transition: all .3s;
+  position: relative; overflow: hidden;
+}
+.feat-card::before {
+  content: '';
+  position: absolute; inset: 0; opacity: 0;
+  transition: opacity .3s;
+  border-radius: 28px;
+}
+.feat-card:hover { transform: translateY(-8px); border-color: currentColor; }
+.feat-card:hover::before { opacity: 1; }
+.feat-card.red   { --c: var(--red);    } .feat-card.red::before   { background: linear-gradient(135deg, rgba(255,107,107,.05), rgba(255,107,107,.1)); }
+.feat-card.orange{ --c: var(--orange); } .feat-card.orange::before{ background: linear-gradient(135deg, rgba(255,159,67,.05), rgba(255,159,67,.1)); }
+.feat-card.green { --c: var(--green);  } .feat-card.green::before { background: linear-gradient(135deg, rgba(76,175,80,.05), rgba(76,175,80,.1)); }
+.feat-card.blue  { --c: var(--blue);   } .feat-card.blue::before  { background: linear-gradient(135deg, rgba(84,160,255,.05), rgba(84,160,255,.1)); }
+.feat-card.purple{ --c: var(--purple); } .feat-card.purple::before{ background: linear-gradient(135deg, rgba(162,155,254,.05), rgba(162,155,254,.1)); }
+.feat-card.gold  { --c: var(--gold);   } .feat-card.gold::before  { background: linear-gradient(135deg, rgba(255,215,0,.05), rgba(255,215,0,.1)); }
+.feat-card { color: var(--c); }
+
+.feat-icon {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: white; box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin-bottom: 20px;
+  transition: transform .3s;
+}
+.feat-card:hover .feat-icon { transform: rotate(-6deg) scale(1.1); }
+.feat-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: var(--ink); }
+.feat-card p  { font-size: 15px; color: #636E72; font-weight: 500; line-height: 1.7; }
+
+/* ════════ Activities Showcase ════════ */
+#activities {
+  background: linear-gradient(160deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+  overflow: hidden;
+}
+#activities .section-label { color: var(--gold); border-color: var(--gold); background: transparent; }
+#activities .section-title { color: white; }
+#activities .section-desc  { color: rgba(255,255,255,.65); }
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px; margin-top: 52px;
+}
+.act-card {
+  border-radius: 24px; padding: 28px 24px;
+  text-align: center; cursor: pointer;
+  transition: all .3s; position: relative; overflow: hidden;
+  border: 2px solid rgba(255,255,255,.1);
+}
+.act-card:hover { transform: translateY(-10px) scale(1.02); border-color: rgba(255,255,255,.3); }
+.act-card.a1 { background: linear-gradient(135deg, rgba(255,107,107,.25), rgba(255,107,107,.08)); }
+.act-card.a2 { background: linear-gradient(135deg, rgba(255,159,67,.25), rgba(255,159,67,.08)); }
+.act-card.a3 { background: linear-gradient(135deg, rgba(84,160,255,.25), rgba(84,160,255,.08)); }
+.act-card.a4 { background: linear-gradient(135deg, rgba(162,155,254,.25), rgba(162,155,254,.08)); }
+
+.act-emoji { font-size: 60px; margin-bottom: 16px; display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,.3)); }
+.act-card h3 { font-size: 20px; font-weight: 800; color: white; margin-bottom: 8px; }
+.act-card p  { font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.6; }
+.act-badge {
+  display: inline-block; margin-top: 14px;
+  padding: 5px 14px; border-radius: 50px;
+  font-size: 12px; font-weight: 700; color: white;
+}
+.a1 .act-badge { background: var(--red); }
+.a2 .act-badge { background: var(--orange); }
+.a3 .act-badge { background: var(--blue); }
+.a4 .act-badge { background: var(--purple); }
+
+/* floating particles in activities section */
+.particle {
+  position: absolute; border-radius: 50%;
+  animation: particleFloat linear infinite;
+  pointer-events: none;
+}
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: .6; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+/* ════════ Content Categories ════════ */
+#content { background: var(--cream); }
+.cats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-top: 48px;
+}
+.cat-card {
+  border-radius: 20px; padding: 24px 20px; text-align: center;
+  border: 2px solid transparent; transition: all .3s; cursor: default;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+}
+.cat-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,.1); }
+.cat-emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+.cat-name { font-size: 16px; font-weight: 800; color: var(--ink); }
+.cat-count { font-size: 13px; font-weight: 600; margin-top: 6px; }
+
+/* ════════ How it works ════════ */
+#how {
+  background: white;
+}
+.steps-wrap { display: flex; flex-direction: column; gap: 0; margin-top: 52px; max-width: 680px; }
+.step {
+  display: flex; gap: 24px; align-items: flex-start;
+  position: relative; padding-bottom: 40px;
+}
+.step:last-child { padding-bottom: 0; }
+.step::before {
+  content: '';
+  position: absolute; top: 52px; right: 25px;
+  width: 2px; bottom: 0;
+  background: linear-gradient(to bottom, #FFE0B2, transparent);
+}
+.step:last-child::before { display: none; }
+.step-num {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: white;
+  flex-shrink: 0; position: relative; z-index: 1;
+  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+.step-body h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--ink); }
+.step-body p  { font-size: 15px; color: #636E72; line-height: 1.7; }
+
+/* ════════ Download Section ════════ */
+#download {
+  background: linear-gradient(135deg, var(--red) 0%, #ee5253 40%, var(--orange) 100%);
+  text-align: center; overflow: hidden; position: relative;
+}
+#download .section-title { color: white; }
+#download .section-desc  { color: rgba(255,255,255,.85); margin: 0 auto 48px; }
+.download-cards {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  justify-content: center; margin-bottom: 40px;
+}
+.dl-card {
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,.3);
+  border-radius: 24px; padding: 32px 28px;
+  min-width: 200px; text-align: center; color: white;
+  transition: all .3s; cursor: pointer; text-decoration: none;
+}
+.dl-card:hover { background: rgba(255,255,255,.25); transform: translateY(-8px); }
+.dl-card-icon { font-size: 52px; display: block; margin-bottom: 14px; }
+.dl-card h3   { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.dl-card p    { font-size: 14px; opacity: .8; }
+.dl-card-btn  {
+  display: inline-block; margin-top: 16px;
+  background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4);
+  border-radius: 50px; padding: 8px 20px;
+  font-size: 14px; font-weight: 700;
+  transition: background .2s;
+}
+.dl-card:hover .dl-card-btn { background: rgba(255,255,255,.35); }
+
+.download-note {
+  color: rgba(255,255,255,.75); font-size: 14px; font-weight: 500;
+}
+.download-note a { color: white; font-weight: 700; }
+
+/* wavy top */
+#download::before {
+  content: '';
+  position: absolute; top: -2px; left: 0; right: 0;
+  height: 60px;
+  background: white;
+  clip-path: ellipse(55% 100% at 50% 0%);
+}
+
+/* ════════ Parents Section ════════ */
+#parents { background: var(--cream); }
+.parents-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-top: 48px;
+}
+@media (max-width: 640px) { .parents-grid { grid-template-columns: 1fr; } }
+.parent-feat {
+  background: white; border-radius: 20px; padding: 24px;
+  display: flex; gap: 16px; align-items: flex-start;
+  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+  transition: transform .2s;
+}
+.parent-feat:hover { transform: translateY(-4px); }
+.parent-feat-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.parent-feat h4 { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+.parent-feat p  { font-size: 14px; color: #636E72; line-height: 1.6; }
+
+/* ════════ Footer ════════ */
+footer {
+  background: var(--dark); color: white;
+  padding: 60px 24px 32px;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 36px; font-weight: 900;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.footer-tagline { color: rgba(255,255,255,.5); font-size: 14px; margin-bottom: 32px; }
+.footer-links {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.footer-links a {
+  color: rgba(255,255,255,.6); text-decoration: none; font-size: 14px; font-weight: 600;
+  transition: color .2s;
+}
+.footer-links a:hover { color: var(--orange); }
+.footer-badges {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.badge-pill {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 50px; padding: 6px 14px;
+  font-size: 13px; color: rgba(255,255,255,.7); font-weight: 600;
+}
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 24px;
+  font-size: 13px; color: rgba(255,255,255,.4);
+}
+.footer-bottom a { color: rgba(255,255,255,.6); text-decoration: none; }
+.footer-bottom a:hover { color: var(--orange); }
+
+/* ════════ Decorative SVG ════════ */
+.deco-wave {
+  width: 100%; overflow: hidden; line-height: 0;
+}
+.deco-wave svg { display: block; }
+
+/* ════════ Responsive ════════ */
+@media (max-width: 768px) {
+  nav { padding: 10px 16px; }
+  .nav-links { display: none; }
+  .hero { padding: 70px 16px 50px; }
+  .hero-stats { gap: 20px; }
+  section { padding: 60px 16px; }
+  .parents-grid { grid-template-columns: 1fr; }
+}
+
+/* ════════ Scroll Reveal ════════ */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-bg" id="starsContainer"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/public/GT-SARARIM-ICON.png"
+         onerror="this.style.display='none'"
+         alt="GT-SARARIM"/>
+    <span>GT-SARARIM</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">المزايا</a></li>
+    <li><a href="#activities">الأنشطة</a></li>
+    <li><a href="#content">المحتوى</a></li>
+    <li><a href="#parents">الوالدان</a></li>
+    <li><a href="#download" class="nav-cta">تحميل</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- background circles -->
+  <div class="hero-bg-circle" style="width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,107,.18),transparent);top:-100px;right:-100px;"></div>
+  <div class="hero-bg-circle" style="width:400px;height:400px;background:radial-gradient(circle,rgba(255,159,67,.15),transparent);bottom:-80px;left:-80px;animation-delay:1.5s;"></div>
+  <div class="hero-bg-circle" style="width:300px;height:300px;background:radial-gradient(circle,rgba(84,160,255,.12),transparent);top:40%;left:30%;animation-delay:.8s;"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>✨</span> تطبيق مجاني مفتوح المصدر · GPL-3.0
+    </div>
+
+    <div class="hero-icon-ring">
+      <div class="hero-ring-orbit">
+        <div class="hero-ring-dot" style="background:var(--gold)"></div>
+      </div>
+      <img src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/public/GT-SARARIM-ICON.png"
+           onerror="this.outerHTML='<div style=\'width:140px;height:140px;border-radius:36px;background:linear-gradient(135deg,#FF6B6B,#FF9F43);display:flex;align-items:center;justify-content:center;font-size:60px;margin:0 auto;box-shadow:0 20px 60px rgba(255,107,107,.4)\'>🌟</div>'"
+           alt="GT-SARARIM Icon"/>
+    </div>
+
+    <h1>GT-SARARIM</h1>
+    <p class="hero-sub">سارة ريم — عالم المعرفة والمرح</p>
+    <p class="hero-tagline">
+      تطبيق تعليمي ترفيهي مصمم للطفل العربي المسلم<br/>
+      قصص وألغاز وأنشطة تفاعلية · <strong>يعمل بالكامل بدون إنترنت</strong>
+    </p>
+
+    <div class="hero-btns">
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="btn btn-primary">
+        <span>⬇</span> تحميل التطبيق
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="btn btn-linux">
+        <span>🐧</span> Linux AppImage
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="btn btn-android">
+        <span>🤖</span> Android APK
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM" class="btn btn-outline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        المصدر
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">8+</div><div class="stat-lbl">قصة تعليمية</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">أنشطة تفاعلية</div></div>
+      <div class="stat"><div class="stat-num">15+</div><div class="stat-lbl">سؤال ولغز</div></div>
+      <div class="stat"><div class="stat-num">4-12</div><div class="stat-lbl">سنة (الفئة العمرية)</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-lbl">أوف لاين</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>اكتشف المزيد</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label" style="color:var(--orange);border-color:var(--orange)">✦ المزايا</div>
+      <h2 class="section-title reveal">كل ما يحتاجه طفلك</h2>
+      <p class="section-desc reveal" style="margin:0 auto">
+        محتوى تعليمي أصيل مصمم بعناية للطفل العربي المسلم، يجمع بين القيم الإسلامية والتفكير العلمي
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card red reveal">
+        <div class="feat-icon">📖</div>
+        <h3>قصص مشكّلة بالكامل</h3>
+        <p>قصص الأنبياء والأخلاق وعلماء المسلمين بنص مشكّل يساعد الأطفال على تعلم القراءة الصحيحة</p>
+      </div>
+      <div class="feat-card orange reveal">
+        <div class="feat-icon">🏆</div>
+        <h3>نظام مستويات وإنجازات</h3>
+        <p>4 مستويات تصاعدية مع نقاط وشهادات إنجاز، تحفّز الطفل على المتابعة والتقدم</p>
+      </div>
+      <div class="feat-card green reveal">
+        <div class="feat-icon">🎯</div>
+        <h3>أسئلة بخيارات مبعثرة</h3>
+        <p>خلط تلقائي لترتيب الخيارات في كل مرة لضمان حقيقي التعلم لا الحفظ</p>
+      </div>
+      <div class="feat-card blue reveal">
+        <div class="feat-icon">🎵</div>
+        <h3>أصوات خلفية أوف لاين</h3>
+        <p>خرير المياه · صوت المطر · نسيم الطبيعة · موسيقى هادئة — مولّدة بالكامل دون ملفات</p>
+      </div>
+      <div class="feat-card purple reveal">
+        <div class="feat-icon">🌙</div>
+        <h3>وضعان فاتح وداكن</h3>
+        <p>يكتشف وضع النظام تلقائياً مع إمكانية التبديل اليدوي في أي وقت</p>
+      </div>
+      <div class="feat-card gold reveal">
+        <div class="feat-icon">🔒</div>
+        <h3>بيانات محلية 100%</h3>
+        <p>لا خوادم · لا إنترنت · لا إعلانات. جميع بيانات أطفالك محفوظة على جهازك فقط</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITIES -->
+<section id="activities">
+  <!-- particles -->
+  <div id="particlesContainer"></div>
+  <div class="container" style="position:relative;z-index:2">
+    <div style="text-align:center">
+      <div class="section-label">🎮 الأنشطة</div>
+      <h2 class="section-title reveal">أنشطة ممتعة لكل طفل</h2>
+      <p class="section-desc reveal" style="margin:0 auto">
+        4 أنشطة تفاعلية مختلفة تناسب جميع الأذواق والمستويات
+      </p>
+    </div>
+    <div class="activities-grid">
+      <div class="act-card a1 reveal">
+        <span class="act-emoji">🧠</span>
+        <h3>مسابقة المعلومات</h3>
+        <p>أسئلة متعددة المجالات مع ردود فعل تحفيزية فورية وعداد سلاسل الإجابات</p>
+        <span class="act-badge">15+ سؤال</span>
+      </div>
+      <div class="act-card a2 reveal">
+        <span class="act-emoji">🖼</span>
+        <h3>اختبار الصور</h3>
+        <p>تعرّف على الشكل الصحيح من خيارات مصوّرة بـ SVG — مثالي للأطفال الصغار</p>
+        <span class="act-badge">6 أسئلة مصوّرة</span>
+      </div>
+      <div class="act-card a3 reveal">
+        <span class="act-emoji">✏️</span>
+        <h3>وصل النقاط</h3>
+        <p>صِل النقاط بالترتيب لترسم نجمة · بيتاً · هلالاً · سمكة · زهرة · جملاً</p>
+        <span class="act-badge">6 أشكال SVG</span>
+      </div>
+      <div class="act-card a4 reveal">
+        <span class="act-emoji">🎨</span>
+        <h3>التلوين الإبداعي</h3>
+        <p>لوّن 6 صور جميلة بلوحة ألوان غنية — تنمية الخيال والإبداع البصري</p>
+        <span class="act-badge">6 صور للتلوين</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<section id="content">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label" style="color:var(--blue);border-color:var(--blue)">📚 المحتوى</div>
+      <h2 class="section-title reveal">فئات القصص</h2>
+      <p class="section-desc reveal" style="margin:0 auto 0">
+        محتوى تعليمي متنوع يغطي مختلف جوانب التربية الإسلامية والمعرفة العلمية
+      </p>
+    </div>
+    <div class="cats-grid">
+      <div class="cat-card reveal" style="border-color:#4CAF5020">
+        <span class="cat-emoji">🕌</span>
+        <div class="cat-name">قصص الأنبياء</div>
+        <div class="cat-count" style="color:var(--green)">نوح · يوسف وغيرهم</div>
+      </div>
+      <div class="cat-card reveal" style="border-color:#FF9F4320">
+        <span class="cat-emoji">⭐</span>
+        <div class="cat-name">الأخلاق والقيم</div>
+        <div class="cat-count" style="color:var(--orange)">الصدق · البر · الأمانة</div>
+      </div>
+      <div class="cat-card reveal" style="border-color:#54A0FF20">
+        <span class="cat-emoji">📚</span>
+        <div class="cat-name">علماء المسلمين</div>
+        <div class="cat-count" style="color:var(--blue)">الخوارزمي · ابن سينا</div>
+      </div>
+      <div class="cat-card reveal" style="border-color:#FF6B6B20">
+        <span class="cat-emoji">🔬</span>
+        <div class="cat-name">قصص العلوم</div>
+        <div class="cat-count" style="color:var(--red)">الفضاء · الحيوانات</div>
+      </div>
+      <div class="cat-card reveal" style="border-color:#A29BFE20">
+        <span class="cat-emoji">📖</span>
+        <div class="cat-name">قصص تعليمية</div>
+        <div class="cat-count" style="color:var(--purple)">قابلة للتخصيص</div>
+      </div>
+    </div>
+
+    <!-- Levels -->
+    <div style="margin-top:64px;text-align:center">
+      <h3 class="reveal" style="font-size:28px;font-weight:900;margin-bottom:8px">نظام المستويات</h3>
+      <p class="reveal" style="color:#636E72;margin-bottom:36px">المحتوى مصنّف حسب الفئة العمرية والمستوى</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">
+        <div class="reveal" style="background:white;border-radius:20px;padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);border:2px solid #4CAF5030;min-width:150px">
+          <div style="font-size:32px">🌱</div>
+          <div style="font-weight:900;font-size:18px;margin-top:8px">تمهيدي</div>
+          <div style="font-size:13px;color:#636E72;margin-top:4px">4-6 سنوات</div>
+          <div style="font-size:12px;color:var(--green);font-weight:700;margin-top:6px">0 نقطة</div>
+        </div>
+        <div class="reveal" style="background:white;border-radius:20px;padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);border:2px solid #FF9F4330;min-width:150px">
+          <div style="font-size:32px">📚</div>
+          <div style="font-weight:900;font-size:18px;margin-top:8px">مبتدئ</div>
+          <div style="font-size:13px;color:#636E72;margin-top:4px">6-8 سنوات</div>
+          <div style="font-size:12px;color:var(--orange);font-weight:700;margin-top:6px">500 نقطة</div>
+        </div>
+        <div class="reveal" style="background:white;border-radius:20px;padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);border:2px solid #54A0FF30;min-width:150px">
+          <div style="font-size:32px">⭐</div>
+          <div style="font-weight:900;font-size:18px;margin-top:8px">متوسط</div>
+          <div style="font-size:13px;color:#636E72;margin-top:4px">8-10 سنوات</div>
+          <div style="font-size:12px;color:var(--blue);font-weight:700;margin-top:6px">1500 نقطة</div>
+        </div>
+        <div class="reveal" style="background:white;border-radius:20px;padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);border:2px solid #FF6B6B30;min-width:150px">
+          <div style="font-size:32px">🏆</div>
+          <div style="font-weight:900;font-size:18px;margin-top:8px">متقدم</div>
+          <div style="font-size:13px;color:#636E72;margin-top:4px">10-12 سنة</div>
+          <div style="font-size:12px;color:var(--red);font-weight:700;margin-top:6px">3000 نقطة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARENTS -->
+<section id="parents" style="background:white">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label" style="color:var(--red);border-color:var(--red)">🛡 الوالدان</div>
+      <h2 class="section-title reveal">تحكم كامل للوالدين</h2>
+      <p class="section-desc reveal" style="margin:0 auto">
+        لوحة تحكم شاملة تمنح الوالدين إشرافاً كاملاً على تجربة أطفالهم
+      </p>
+    </div>
+    <div class="parents-grid">
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#E8F5E9">⏱</div>
+        <div>
+          <h4>وقت لعب يومي</h4>
+          <p>تحديد وقت لعب يومي لكل طفل على حدة مع إشعار عند انتهائه</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#FFF3E0">🔐</div>
+        <div>
+          <h4>قفل الأقسام</h4>
+          <p>قفل أي قسم من التطبيق بكلمة مرور الوالدين</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#E3F2FD">✏️</div>
+        <div>
+          <h4>إضافة محتوى مخصص</h4>
+          <p>إضافة قصص وأسئلة وألغاز خاصة مع صور وأسئلة مرتبطة</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#F3E5F5">💾</div>
+        <div>
+          <h4>نسخ احتياطية</h4>
+          <p>تصدير واستيراد بيانات الأبناء ومستوياتهم بملف JSON</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#FFF8E1">🔤</div>
+        <div>
+          <h4>إدارة الخطوط</h4>
+          <p>تغيير خط التطبيق كاملاً مع دعم استيراد خطوط مخصصة</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#FCE4EC">↩️</div>
+        <div>
+          <h4>تراجع الحذف</h4>
+          <p>10 ثوانٍ للتراجع عن أي حذف قبل أن يصبح نهائياً</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#E8F5E9">🔑</div>
+        <div>
+          <h4>استرداد كلمة المرور</h4>
+          <p>سؤال أمان مخصص لاسترداد الوصول عند نسيان كلمة المرور</p>
+        </div>
+      </div>
+      <div class="parent-feat reveal">
+        <div class="parent-feat-icon" style="background:#E3F2FD">📁</div>
+        <div>
+          <h4>فئات قصص مخصصة</h4>
+          <p>إنشاء فئات قصص جديدة برموز تعبيرية وألوان حسب رغبتك</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label" style="color:var(--green);border-color:var(--green)">🚀 البداية</div>
+      <h2 class="section-title reveal">كيف تبدأ؟</h2>
+    </div>
+    <div class="steps-wrap reveal">
+      <div class="step">
+        <div class="step-num" style="background:linear-gradient(135deg,var(--red),#ee5253)">1</div>
+        <div class="step-body">
+          <h3>حمّل التطبيق</h3>
+          <p>اختر نسختك: AppImage لـ Linux، exe لـ Windows، أو APK لـ Android من صفحة الإصدارات</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:linear-gradient(135deg,var(--orange),#e67e22)">2</div>
+        <div class="step-body">
+          <h3>أنشئ حسابات أطفالك</h3>
+          <p>من شاشة الدخول اضغط "إضافة حساب جديد" وأدخل اسم طفلك — لا بريد إلكتروني ولا اشتراك</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:linear-gradient(135deg,var(--green),#27ae60)">3</div>
+        <div class="step-body">
+          <h3>اضبط الإعدادات (اختياري)</h3>
+          <p>كوالد ادخل بكلمة مرور "admin" واضبط وقت اللعب والمحتوى حسب رغبتك</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:linear-gradient(135deg,var(--blue),#2e86de)">4</div>
+        <div class="step-body">
+          <h3>استمتع بالتعلم!</h3>
+          <p>طفلك جاهز للتعلم والمرح في بيئة آمنة تماماً — بدون إعلانات أو محتوى خارجي</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <div class="container" style="position:relative;z-index:2;padding-top:30px">
+    <h2 class="section-title">حمّل التطبيق الآن</h2>
+    <p class="section-desc">مجاني · مفتوح المصدر · يعمل بدون إنترنت</p>
+    <div class="download-cards">
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="dl-card">
+        <span class="dl-card-icon">🐧</span>
+        <h3>Linux</h3>
+        <p>AppImage · deb</p>
+        <div class="dl-card-btn">⬇ تحميل</div>
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="dl-card">
+        <span class="dl-card-icon">🪟</span>
+        <h3>Windows</h3>
+        <p>مثبّت exe</p>
+        <div class="dl-card-btn">⬇ تحميل</div>
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="dl-card">
+        <span class="dl-card-icon">🤖</span>
+        <h3>Android</h3>
+        <p>ملف APK</p>
+        <div class="dl-card-btn">⬇ تحميل</div>
+      </a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM" class="dl-card">
+        <span class="dl-card-icon">💻</span>
+        <h3>المصدر</h3>
+        <p>GitHub · GPL-3.0</p>
+        <div class="dl-card-btn">عرض الكود</div>
+      </a>
+    </div>
+    <p class="download-note">
+      متطلبات Android: تفعيل "مصادر غير معروفة" من إعدادات الجهاز ·
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/blob/main/README.md">دليل التثبيت الكامل</a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">GT-SARARIM</div>
+  <p class="footer-tagline">سارة ريم — عالم المعرفة والمرح للطفل العربي المسلم 🌟</p>
+  <div class="footer-links">
+    <a href="https://github.com/SalehGNUTUX/GT-SARARIM">GitHub</a>
+    <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases">الإصدارات</a>
+    <a href="https://github.com/SalehGNUTUX/GT-SARARIM/blob/main/README.md">التوثيق</a>
+    <a href="https://github.com/SalehGNUTUX/GT-SARARIM/issues">الإبلاغ عن مشكلة</a>
+    <a href="https://github.com/SalehGNUTUX">GNUTUX</a>
+  </div>
+  <div class="footer-badges">
+    <div class="badge-pill">📖 قصص مشكّلة</div>
+    <div class="badge-pill">🎮 4 أنشطة</div>
+    <div class="badge-pill">🔒 100% أوف لاين</div>
+    <div class="badge-pill">🆓 مجاني تماماً</div>
+    <div class="badge-pill">🔓 مفتوح المصدر</div>
+    <div class="badge-pill">🌙 وضع داكن</div>
+    <div class="badge-pill">📱 Linux · Windows · Android</div>
+  </div>
+  <div class="footer-bottom">
+    <p>
+      صُنع بـ ❤️ لـ
+      <a href="https://github.com/SalehGNUTUX">SalehGNUTUX</a>
+      · رخصة
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/blob/main/LICENSE">GNU GPL-3.0</a>
+      · v2.0.0
+    </p>
+  </div>
+</footer>
+
+<script>
+// ── Stars ──
+(function(){
+  const c = document.getElementById('starsContainer');
+  for(let i=0;i<60;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random()*4+1;
+    s.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;
+    `;
+    c.appendChild(s);
+  }
+})();
+
+// ── Particles in activities ──
+(function(){
+  const c = document.getElementById('particlesContainer');
+  if(!c) return;
+  c.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none';
+  const colors = ['#FF6B6B','#FF9F43','#54A0FF','#A29BFE','#FFD700','#4CAF50'];
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sz = 4+Math.random()*8;
+    p.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      opacity:.5;
+      animation-duration:${8+Math.random()*12}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    c.appendChild(p);
+  }
+})();
+
+// ── Scroll Reveal ──
+(function(){
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if(e.isIntersecting){
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+
+// ── Smooth nav highlight ──
+(function(){
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if(window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    links.forEach(a => {
+      a.style.background = a.getAttribute('href') === '#'+current ? 'var(--orange)' : '';
+      a.style.color = a.getAttribute('href') === '#'+current ? 'white' : '';
+    });
+  }, {passive:true});
+})();
+
+// ── Number counter animation ──
+(function(){
+  const stats = document.querySelectorAll('.stat-num');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(!e.isIntersecting) return;
+      const el = e.target;
+      const text = el.textContent;
+      const num = parseFloat(text);
+      if(isNaN(num)) return;
+      const suffix = text.replace(/[\d.]/g,'');
+      let start = 0; const dur = 1200;
+      const step = timestamp => {
+        if(!start) start = timestamp;
+        const prog = Math.min((timestamp-start)/dur, 1);
+        const ease = 1 - Math.pow(1-prog, 3);
+        el.textContent = (num < 10 ? (ease*num).toFixed(0) : Math.round(ease*num)) + suffix;
+        if(prog < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      obs.unobserve(el);
+    });
+  }, {threshold:0.5});
+  stats.forEach(s => obs.observe(s));
+})();
+</script>
+</body>
+</html>
