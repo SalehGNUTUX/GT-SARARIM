@@ -3,183 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GT-SARARIM — سارة ريم | تطبيق تعليمي تفاعلي للطفل المسلم</title>
-  <meta name="description" content="تطبيق تعليمي ترفيهي مجاني ومفتوح المصدر للأطفال المسلمين. قصص وألغاز وأنشطة تفاعلية تعمل بدون إنترنت. يدعم غنو/لينكس، أندرويد، والويب.">
-  <meta name="keywords" content="تعليم أطفال, إسلامي, قصص أطفال, ألغاز, أنشطة, بدون إنترنت, GPL, لينكس, أندرويد, سارة ريم">
-  <meta name="author" content="SalehGNUTUX">
+  <title>GT-SARARIM — سارة ريم | التطبيق التعليمي الممتع للطفل المسلم</title>
+  <meta name="description" content="تطبيق تعليمي ترفيهي مجاني مفتوح المصدر للأطفال المسلمين. قصص وألغاز وأنشطة تفاعلية تعمل بدون إنترنت. يدعم لينكس، أندرويد، والويب. تحكم كامل للوالدين.">
   <meta property="og:title" content="GT-SARARIM - عالم المعرفة والمرح">
-  <meta property="og:description" content="تطبيق تعليمي مجاني للطفل العربي المسلم يعمل بدون إنترنت.">
+  <meta property="og:description" content="تطبيق تعليمي ممتع وآمن للأطفال، يعمل بدون إنترنت">
   <meta property="og:image" content="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png">
   <meta property="og:url" content="https://salehgnutux.github.io/GT-SARARIM/">
-  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png">
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png">
-  <!-- خط Cairo -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ========== الوضع الفاتح (نهار) ========== */
     :root {
-      /* Light mode (default) */
-      --bg-gradient-start: #FFF9F0;
-      --bg-gradient-end: #FFE8D6;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --text-primary: #2D3436;
-      --text-secondary: #636E72;
+      --bg-day: linear-gradient(145deg, #87CEEB 0%, #B0E0FF 50%, #E0F7FF 100%);
+      --card-bg-day: rgba(255, 255, 245, 0.85);
+      --text-day: #2C3E50;
+      --text-muted-day: #5D6D7E;
+      --shadow-day: 0 15px 30px rgba(0,0,0,0.1);
+      --border-day: #FFE0A0;
       --accent-red: #FF6B6B;
       --accent-orange: #FF9F43;
       --accent-green: #4CAF50;
-      --accent-blue: #54A0FF;
+      --accent-blue: #2E86C1;
       --accent-purple: #A29BFE;
-      --nav-bg: rgba(255, 251, 240, 0.9);
-      --border-color: #FFE0B2;
-      --shadow: 0 10px 30px rgba(0,0,0,0.08);
-      --star-color: #FFD700;
+      --accent-pink: #FF85B3;
+      --code-bg: rgba(0,0,0,0.08);
+      --code-color: #c7254e;
     }
 
+    /* ========== الوضع الداكن (ليل) ========== */
     body.dark {
-      --bg-gradient-start: #1A1A2E;
-      --bg-gradient-end: #16213E;
-      --card-bg: rgba(30, 30, 50, 0.85);
-      --text-primary: #F0F0F0;
-      --text-secondary: #B0B0C0;
-      --nav-bg: rgba(20, 20, 40, 0.9);
-      --border-color: #2D2D44;
-      --shadow: 0 10px 30px rgba(0,0,0,0.3);
-      --star-color: #FFC107;
+      --bg-day: linear-gradient(145deg, #0B1020 0%, #1A1F35 50%, #2A2F45 100%);
+      --card-bg-day: rgba(30, 35, 55, 0.85);
+      --text-day: #F0F0F0;
+      --text-muted-day: #B0B0C0;
+      --shadow-day: 0 15px 30px rgba(0,0,0,0.4);
+      --border-day: #2D3E50;
+      --code-bg: rgba(255,255,255,0.2);
+      --code-color: #ffaa88;
     }
 
     body {
-      font-family: 'Cairo', 'Segoe UI', 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-      color: var(--text-primary);
-      transition: background 0.3s ease, color 0.2s ease;
+      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      background: var(--bg-day);
+      color: var(--text-day);
+      transition: background 0.5s, color 0.3s;
       min-height: 100vh;
       overflow-x: hidden;
-      direction: rtl;
+      position: relative;
     }
 
-    /* Floating Bubbles (الكرات المتصاعدة) */
-    .bubbles-container {
+    /* ----- السماء والعناصر المتحركة ----- */
+    .sky {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none;
       z-index: 0;
+      pointer-events: none;
       overflow: hidden;
     }
-    .bubble {
+    .sun, .moon {
       position: absolute;
-      bottom: -50px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+      top: 60px;
+      right: 60px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.1s ease-out;
-      pointer-events: auto;
-      backdrop-filter: blur(2px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.5s;
     }
-    body.dark .bubble {
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+    .sun {
+      background: radial-gradient(circle, #FFD700, #FFA500);
+      box-shadow: 0 0 50px #FFD700;
+      animation: glow 3s infinite alternate;
     }
-    .bubble::before {
-      content: '';
-      position: absolute;
-      top: 15%;
-      left: 20%;
-      width: 30%;
-      height: 30%;
-      background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0));
-      border-radius: 50%;
+    .moon {
+      background: radial-gradient(circle, #F0E68C, #C0C0C0);
+      box-shadow: 0 0 30px #FFFACD;
+      display: none;
+    }
+    body.dark .sun { display: none; }
+    body.dark .moon { display: block; }
+
+    @keyframes glow {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(1.1); opacity: 1; }
     }
 
-    /* Main content */
+    /* السحب في الوضع الفاتح */
+    .cloud {
+      position: absolute;
+      background: rgba(255, 250, 240, 0.85);
+      border-radius: 80% 20% 70% 30% / 60% 50% 50% 40%;
+      filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      will-change: transform;
+    }
+    /* السحب في الوضع الداكن */
+    body.dark .cloud {
+      background: rgba(180, 190, 230, 0.25);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    /* نبدأ السحب من خارج الشاشة يميناً (لأن الاتجاه rtl، نبدأ من اليمين) */
+    @keyframes floatCloudRightToLeft {
+      0% { transform: translateX(100vw); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateX(-100vw); opacity: 0; }
+    }
+
+    .bird {
+      position: absolute;
+      font-size: 24px;
+      animation: flyBird 25s linear infinite;
+      opacity: 0.7;
+    }
+    body.dark .bird { display: none; }
+    @keyframes flyBird {
+      0% { transform: translateX(-100px) translateY(0px); }
+      50% { transform: translateX(50vw) translateY(-30px); }
+      100% { transform: translateX(calc(100vw + 100px)) translateY(0px); }
+    }
+
+    .star {
+      position: absolute;
+      background: radial-gradient(circle, #FFD966, transparent);
+      border-radius: 50%;
+      animation: twinkle 2s infinite alternate;
+    }
+    body:not(.dark) .star { display: none; }
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* المحتوى الرئيسي */
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
       position: relative;
       z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
     }
 
-    /* Header */
+    /* الشعار والرأس */
     .header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin: 1rem 0 2rem;
     }
     .logo {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 15px;
+      background: var(--card-bg-day);
+      backdrop-filter: blur(10px);
+      border-radius: 80px;
+      padding: 0.5rem 2rem;
+      box-shadow: var(--shadow-day);
+      border: 2px solid var(--border-day);
     }
     .logo-img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 20px rgba(255,107,107,0.3));
+      width: 70px;
       transition: transform 0.3s;
     }
-    .logo-img:hover {
-      transform: scale(1.05) rotate(5deg);
-    }
+    .logo-img:hover { transform: rotate(8deg) scale(1.05); }
     .logo h1 {
-      font-size: 3rem;
+      font-size: 2.8rem;
       background: linear-gradient(135deg, var(--accent-red), var(--accent-orange));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    .tagline {
-      font-size: 1.3rem;
-      color: var(--accent-orange);
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-    .sub {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--accent-green);
-      color: white;
-      padding: 0.3rem 1rem;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      margin: 0.3rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+    .tagline { font-size: 1.8rem; font-weight: bold; color: var(--accent-orange); margin-top: 0.5rem; }
+    .sub { font-size: 1.1rem; color: var(--text-muted-day); }
 
-    /* Theme Toggle */
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 50px;
-      padding: 8px 16px;
-      display: flex;
-      gap: 10px;
-      cursor: pointer;
-      z-index: 100;
-      backdrop-filter: blur(8px);
-      font-weight: bold;
-      transition: all 0.2s;
-    }
-    .theme-toggle:hover {
-      transform: scale(1.05);
-    }
-
-    /* Buttons */
+    /* الأزرار الرئيسية */
     .btn-group {
       display: flex;
       flex-wrap: wrap;
@@ -190,378 +190,354 @@
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.8rem;
-      border-radius: 50px;
-      text-decoration: none;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: 60px;
       font-weight: bold;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      transition: 0.2s;
+      text-decoration: none;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-red), #ee5253);
-      color: white;
-      box-shadow: 0 8px 20px rgba(255,107,107,0.3);
-    }
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(255,107,107,0.4);
-    }
-    .btn-linux {
-      background: linear-gradient(135deg, var(--accent-orange), #e67e22);
-      color: white;
-    }
-    .btn-android {
-      background: linear-gradient(135deg, var(--accent-green), #27ae60);
-      color: white;
-    }
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--accent-blue);
-      color: var(--accent-blue);
-    }
-    .btn-outline:hover {
-      background: var(--accent-blue);
-      color: white;
-    }
-    .btn-web {
-      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-      color: white;
-    }
+    .btn-web { background: #6c5ce7; color: white; box-shadow: 0 6px 14px rgba(108,92,231,0.3); }
+    .btn-linux { background: var(--accent-orange); color: white; }
+    .btn-android { background: var(--accent-green); color: white; }
+    .btn-github { background: #2c3e50; color: white; }
+    .btn:hover { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
 
-    /* Cards Grid */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin: 2.5rem 0;
-    }
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border-radius: 32px;
-      padding: 1.8rem;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-align: center;
-      border: 1px solid var(--border-color);
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    }
-    .card-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-    .card h3 {
-      color: var(--accent-red);
-      margin-bottom: 0.5rem;
-    }
-
-    /* Features Grid */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.8rem;
-      margin: 2rem 0;
-    }
-    .feature {
-      text-align: center;
-      padding: 1rem;
-      background: var(--card-bg);
-      border-radius: 28px;
-      backdrop-filter: blur(8px);
-      transition: transform 0.2s;
-    }
-    .feature:hover {
-      transform: scale(1.02);
-    }
-    .feature-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    /* Download Section */
-    .download-section {
-      background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,159,67,0.15));
-      border-radius: 48px;
-      padding: 2rem;
-      margin: 2.5rem 0;
-      text-align: center;
-      backdrop-filter: blur(4px);
-    }
-    .download-buttons {
+    /* الإحصائيات */
+    .stats {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 1.2rem;
-      margin-top: 1.5rem;
+      gap: 2rem;
+      margin: 2rem 0;
     }
-    .checksum {
+    .stat-card {
+      background: var(--card-bg-day);
+      backdrop-filter: blur(8px);
+      border-radius: 40px;
+      padding: 1rem 2rem;
+      text-align: center;
+      min-width: 130px;
+      border: 1px solid var(--border-day);
+    }
+    .stat-number { font-size: 2.5rem; font-weight: 900; color: var(--accent-red); }
+    .stat-label { font-size: 0.9rem; }
+
+    /* شبكة البطاقات (الميزات) */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+      margin: 2rem 0;
+    }
+    .feature-card {
+      background: var(--card-bg-day);
+      backdrop-filter: blur(8px);
+      border-radius: 40px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid var(--border-day);
+      box-shadow: var(--shadow-day);
+      position: relative;
+    }
+    .feature-card:hover { transform: translateY(-6px); border-color: var(--accent-pink); }
+    .card-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+    .feature-card h3 { font-size: 1.5rem; color: var(--accent-red); margin-bottom: 0.3rem; }
+    .short-desc { font-size: 0.9rem; color: var(--text-muted-day); }
+    .full-desc {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, margin 0.3s;
+      font-size: 0.85rem;
+      color: var(--text-day);
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      margin-top: 0;
+      padding: 0 0.5rem;
+    }
+    .feature-card.expanded .full-desc {
+      max-height: 200px;
+      margin-top: 1rem;
+      padding: 0.8rem;
+    }
+    .expand-hint {
       font-size: 0.7rem;
-      color: var(--text-secondary);
-      word-break: break-all;
-      margin-top: 0.8rem;
+      margin-top: 0.5rem;
+      opacity: 0.6;
     }
 
-    /* Footer */
+    /* قسم التحميل */
+    .download-area {
+      background: linear-gradient(120deg, rgba(255,107,107,0.15), rgba(255,159,67,0.15));
+      border-radius: 60px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .checksum { font-size: 0.7rem; word-break: break-all; margin-top: 0.8rem; }
+    code {
+      background: var(--code-bg);
+      color: var(--code-color);
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    /* تذييل */
     .footer {
       text-align: center;
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border-color);
-      color: var(--text-secondary);
-      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-top: 2px dashed var(--border-day);
+      font-size: 0.8rem;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .logo h1 { font-size: 2rem; }
+    /* زر تبديل الوضع */
+    .theme-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--card-bg-day);
+      border-radius: 40px;
+      padding: 8px 18px;
+      cursor: pointer;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+      font-weight: bold;
+      border: 1px solid var(--border-day);
+    }
+
+    @media (max-width: 680px) {
+      .logo h1 { font-size: 1.8rem; }
+      .logo-img { width: 50px; }
       .btn-group { flex-direction: column; align-items: stretch; }
       .btn { justify-content: center; }
-      .theme-toggle { top: 10px; left: 10px; padding: 4px 12px; font-size: 12px; }
+      .stats { gap: 1rem; }
+      .stat-card { padding: 0.5rem 1rem; min-width: 100px; }
     }
   </style>
 </head>
 <body>
-  <div class="bubbles-container" id="bubblesContainer"></div>
-
-  <!-- Theme Toggle -->
-  <div class="theme-toggle" id="themeToggle">
-    <span>🌙</span> <span>☀️</span>
-  </div>
-
+  <div class="sky" id="skyAnim"></div>
+  <div class="theme-toggle" id="themeToggle">🌙/☀️ الوضع</div>
   <div class="container">
-    <!-- Header -->
     <div class="header">
       <div class="logo">
-        <img src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png" alt="GT-SARARIM Logo" class="logo-img">
+        <img class="logo-img" src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png" alt="شعار">
         <h1>GT-SARARIM</h1>
       </div>
-      <p class="tagline">🌟 سارة ريم — عالم المعرفة والمرح 🌟</p>
-      <p class="sub">تطبيق تعليمي ترفيهي مصمم للطفل العربي المسلم</p>
-      <p>📖 قصص | 🧩 ألغاز | 🎮 أنشطة تفاعلية | 🔒 يعمل بالكامل بدون إنترنت</p>
-      <div>
-        <span class="badge">🎓 تعليمي</span>
-        <span class="badge">🕌 إسلامي</span>
-        <span class="badge">💯 أوف لاين</span>
-        <span class="badge">🔓 حر ومجاني</span>
-        <span class="badge">🖼 إضافة صور</span>
-        <span class="badge">🎵 أصوات مخصصة</span>
+      <div class="tagline">🌟 سارة ريم — عالم المعرفة والمرح 🌟</div>
+      <div class="sub">تطبيق تعليمي تفاعلي للطفل العربي المسلم • يعمل بدون إنترنت • حر ومجاني</div>
+    </div>
+
+    <div class="btn-group">
+      <a href="https://salehgnutux.github.io/GT-SARARIM/web/" class="btn btn-web">🌐 تشغيل مباشر (الويب)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-2.0.0.AppImage" class="btn btn-linux">🐧 تحميل لينكس (AppImage)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-v2.apk" class="btn btn-android">📱 تحميل أندرويد (APK)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM" class="btn btn-github">🐙 GitHub (مصدر مفتوح)</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card"><div class="stat-number">8+</div><div class="stat-label">قصة تعليمية</div></div>
+      <div class="stat-card"><div class="stat-number">4</div><div class="stat-label">أنشطة تفاعلية</div></div>
+      <div class="stat-card"><div class="stat-number">20+</div><div class="stat-label">سؤال ولغز</div></div>
+      <div class="stat-card"><div class="stat-number">4-12</div><div class="stat-label">الفئة العمرية</div></div>
+      <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">بدون إنترنت</div></div>
+    </div>
+
+    <!-- بطاقات الميزات (قابلة للنقر لتوسيع الشرح) -->
+    <div class="cards-grid" id="featuresGrid">
+      <div class="feature-card" data-desc="📖 نصوص القصص كاملة بالحركات (تشكيل) لتعليم القراءة الصحيحة. يمكنك إضافة صور لكل قصة عبر لوحة التحكم.">
+        <div class="card-icon">📖</div><h3>قصص مشكّلة</h3>
+        <div class="short-desc">نصوص كاملة بالحركات + صور مخصصة</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="أضف صورة لكل سؤال أو لكل لغز — تظهر أثناء الاختبار. الصور تجعل التعلم أكثر تشويقاً للأطفال.">
+        <div class="card-icon">🖼️</div><h3>صور للأسئلة والألغاز</h3>
+        <div class="short-desc">إرفاق صور مخصصة لكل سؤال ولغز</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="ارفع ملفات MP3 أو OGG واستخدمها كخلفية داخل التطبيق. يمكنك تبديل الصوت من لوحة الوالدين.">
+        <div class="card-icon">🎵</div><h3>أصوات خلفية مخصصة</h3>
+        <div class="short-desc">ارفع موسيقى أو مؤثرات (MP3/OGG)</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="استورد خطاً عربياً (TTF, OTF, WOFF) وسيتغير خط التطبيق بالكامل. يمكنك العودة للخط الافتراضي بسهولة.">
+        <div class="card-icon">🔤</div><h3>خطوط مخصصة</h3>
+        <div class="short-desc">استيراد خطوط عربية (TTF/OTF/WOFF)</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="في صفحة القصة، يوجد زر لتكبير حجم الخط تدريجياً لمساعدة الأطفال الذين يعانون من صعوبات في القراءة.">
+        <div class="card-icon">🔍</div><h3>تكبير النص</h3>
+        <div class="short-desc">زر تكبير الخط داخل القصص</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="حدد وقت لعب يومي لكل طفل على حدة. عند انتهاء الوقت، يُغلق التطبيق تلقائياً ويظهر إشعار.">
+        <div class="card-icon">⏱️</div><h3>تخصيص وقت اللعب</h3>
+        <div class="short-desc">حدد مدة يومية لكل طفل</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="يمكنك وضع كلمة مرور لكل حساب طفل — لن يتمكن من الدخول إلا بعد إدخالها. تظهر واجهة إدخال كلمة المرور عند اختيار الحساب.">
+        <div class="card-icon">🔐</div><h3>حماية حسابات الأطفال</h3>
+        <div class="short-desc">كلمة مرور اختيارية لكل طفل</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="أضف صورة شخصية لكل طفل تظهر في شاشة الدخول والملف الشخصي. يمكن رفع الصور من لوحة الوالدين.">
+        <div class="card-icon">🖼️👤</div><h3>صورة مصغرة للحساب</h3>
+        <div class="short-desc">أفاتار لكل طفل</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="حساب ضيف يمكن استخدامه فوراً بدون إنشاء حساب. مناسب للمعاينة السريعة أو للأطفال الزوار.">
+        <div class="card-icon">👤</div><h3>حساب ضيف</h3>
+        <div class="short-desc">جرب التطبيق بدون تسجيل</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="لوحة تحكم الوالدين تعرض إحصائيات يومية: وقت اللعب المستخدم، النقاط التي جمعها كل طفل، والمستوى الحالي.">
+        <div class="card-icon">📊</div><h3>تتبع وقت التعلم واللعب</h3>
+        <div class="short-desc">تقارير يومية عن تقدم الأطفال</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="يمكنك إضافة قصص، أسئلة، ألغاز، أصوات، وخطوط جديدة بنفسك — تظهر فوراً للأطفال دون الحاجة إلى تحديث التطبيق.">
+        <div class="card-icon">✏️</div><h3>إضافة محتوى مخصص</h3>
+        <div class="short-desc">أضف محتواك دون انتظار تحديثات</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
+      </div>
+      <div class="feature-card" data-desc="لوحة الوالدين تتيح قفل أي قسم من التطبيق (القصص، الألغاز، الأنشطة) بحيث لا يتمكن الطفل من الدخول إليه دون موافقتك.">
+        <div class="card-icon">🔒</div><h3>قفل الأقسام</h3>
+        <div class="short-desc">تحكم في الأقسام المتاحة لكل طفل</div>
+        <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
       </div>
     </div>
 
-    <!-- CTA Buttons -->
-    <div class="btn-group">
-      <a href="https://salehgnutux.github.io/GT-SARARIM/web/" class="btn btn-web">🌐 تشغيل النسخة مباشرة (الويب)</a>
-      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-2.0.0.AppImage" class="btn btn-linux">🐧 تحميل لينكس (AppImage)</a>
-      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-v2.apk" class="btn btn-android">📱 تحميل أندرويد (APK)</a>
-      <a href="https://github.com/SalehGNUTUX/GT-SARARIM" class="btn btn-outline">🐙 GitHub المصدر</a>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="cards">
-      <div class="card"><div class="card-icon">📚</div><h3>8+</h3><p>قصة تعليمية</p><small>قصص الأنبياء، الأخلاق، العلماء، العلوم</small></div>
-      <div class="card"><div class="card-icon">🎮</div><h3>4</h3><p>أنشطة تفاعلية</p><small>مسابقة، صور، وصل نقاط، تلوين</small></div>
-      <div class="card"><div class="card-icon">🧩</div><h3>20+</h3><p>سؤال ولغز</p><small>دين، رياضيات، علوم، لغة عربية</small></div>
-      <div class="card"><div class="card-icon">👶</div><h3>4-12</h3><p>الفئة العمرية</p><small>4 مستويات تصاعدية</small></div>
-    </div>
-
-    <!-- Features (المزايا المتقدمة) -->
-    <div class="features-grid">
-      <div class="feature"><div class="feature-icon">📖</div><h4>قصص مشكّلة</h4><p>نصوص كاملة بالحركات + إمكانية إضافة صور مخصصة للقصة</p></div>
-      <div class="feature"><div class="feature-icon">🖼</div><h4>صور للأسئلة والألغاز</h4><p>أضف صورة لكل سؤال أو لغز لجعل التجربة أكثر تشويقاً</p></div>
-      <div class="feature"><div class="feature-icon">🎵</div><h4>أصوات خلفية مخصصة</h4><p>ارفع ملفات mp3 أو ogg واستخدمها كخلفية داخل التطبيق</p></div>
-      <div class="feature"><div class="feature-icon">🔤</div><h4>خطوط مخصصة</h4><p>استورد خطك المفضل (TTF, OTF, WOFF) ليصبح خط التطبيق بالكامل</p></div>
-      <div class="feature"><div class="feature-icon">🔍</div><h4>تكبير النص</h4><p>في قسم القصص، يمكن تكبير الخط لسهولة القراءة للأطفال</p></div>
-      <div class="feature"><div class="feature-icon">⏱</div><h4>تخصيص وقت اللعب</h4><p>حدد وقتاً يومياً لكل طفل، وعند انتهائه يُغلق التطبيق تلقائياً</p></div>
-      <div class="feature"><div class="feature-icon">🔐</div><h4>حماية حسابات الأطفال</h4><p>ضع كلمة مرور لكل حساب طفل — يطلبها عند الدخول</p></div>
-      <div class="feature"><div class="feature-icon">🖼️</div><h4>صورة مصغرة للحساب</h4><p>أضف صورة شخصية لكل طفل تظهر في شاشة الدخول والملف الشخصي</p></div>
-      <div class="feature"><div class="feature-icon">👤</div><h4>حساب ضيف</h4><p>جرب التطبيق فوراً بدون إنشاء حساب — مناسب للتجربة السريعة</p></div>
-      <div class="feature"><div class="feature-icon">📊</div><h4>تتبع وقت التعلم واللعب</h4><p>لوحة تحكم الوالدين تُظهر إحصائيات يومية لكل طفل (وقت اللعب، النقاط، المستوى)</p></div>
-      <div class="feature"><div class="feature-icon">✏️</div><h4>إضافة محتوى مخصص</h4><p>أضف قصصاً، أسئلة، ألغازاً، أصواتاً، خطوطاً — دون انتظار تحديثات التطبيق</p></div>
-      <div class="feature"><div class="feature-icon">💾</div><h4>نسخ احتياطي كامل</h4><p>صدّر كل شيء (البيانات، الصور، الأصوات، الخطوط) إلى ملف JSON لاستيراده لاحقاً</p></div>
-    </div>
-
-    <!-- Download Section with Checksums & Parent Password Info -->
-    <div class="download-section">
-      <h2>📥 تحميل التطبيق</h2>
-      <p>حر ومجاني — يعمل بدون إنترنت — يمكن للوالدين إضافة محتوى دون انتظار تحديثات</p>
-      <div class="download-buttons">
+    <div class="download-area">
+      <h2>📥 تحميل التطبيق الآن</h2>
+      <p>حر ومجاني • يعمل بدون إنترنت • يمكن للوالدين إضافة محتوى خاص بهم</p>
+      <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin:1rem 0">
         <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-2.0.0.AppImage" class="btn btn-linux">🐧 لينكس (AppImage)</a>
         <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-v2.apk" class="btn btn-android">📱 أندرويد (APK)</a>
-        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases" class="btn btn-outline">📦 جميع الإصدارات</a>
       </div>
       <div class="checksum">
         <strong>AppImage SHA256:</strong> cb313bc81e7d62a374a94904b818c724e3f59f21ced0e77ce053f0f9f7d2855e<br>
         <strong>APK SHA256:</strong> b1a276aa2dfb6fe24a60feeca2747c97dc87ce09e5fa18cbaac322ae96e6f681
       </div>
-      <p style="margin-top: 1rem; font-size: 0.85rem;">📌 ملاحظة: تطبيق أندرويد يتطلب تفعيل "مصادر غير معروفة" من إعدادات الجهاز.</p>
-      <div style="margin-top: 1.2rem; background: rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 16px; display: inline-block;">
-        🛡️ <strong>لدخول لوحة الوالدين:</strong> استخدم كلمة المرور <code style="background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 20px;">admin</code> (يمكنك تغييرها بعد الدخول من الإعدادات).
+      <div style="margin-top:1rem; background:rgba(0,0,0,0.1); display:inline-block; padding:8px 20px; border-radius:40px;">
+        🛡️ <strong>لدخول لوحة الوالدين:</strong> كلمة المرور الافتراضية <code>admin</code> (يمكنك تغييرها بعد الدخول)
       </div>
+      <p style="margin-top:1rem; font-size:0.8rem;">📌 ملاحظة: تطبيق أندرويد يتطلب تفعيل "مصادر غير معروفة" من إعدادات الجهاز.</p>
     </div>
 
-    <!-- Detailed Description with Parent Password Card -->
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">🔑</div>
-        <h3>كلمة مرور الوالدين</h3>
-        <p>الافتراضية: <strong>admin</strong> — يمكنك تغييرها بسهولة من داخل لوحة التحكم بعد الدخول.</p>
-        <small>سؤال استرداد مخصص لاستعادة الوصول إذا نسيتها.</small>
-      </div>
-      <div class="card"><div class="card-icon">✏️</div><h3>تحكم كامل للوالدين</h3><p>أضف قصصاً وأسئلة وألغازاً خاصة بك — دون انتظار تحديثات البرنامج. لوحة تحكم متكاملة مع وقت لعب يومي، قفل أقسام، نسخ احتياطي، واسترداد كلمة مرور.</p></div>
-      <div class="card"><div class="card-icon">💾</div><h3>نسخ احتياطي شامل</h3><p>تصدير واستيراد بيانات الأطفال والمحتوى المخصص بملف JSON — انقل إعداداتك بين الأجهزة بسهولة.</p></div>
-      <div class="card"><div class="card-icon">🔐</div><h3>أمان تام</h3><p>كلمة مرور للوالدين، سؤال استرداد مخصص، تراجع عن الحذف (10 ثوانٍ)، ووقت لعب محدد لكل طفل.</p></div>
-    </div>
-
-    <!-- Additional Highlight: Media & Fonts -->
-    <div class="features-grid" style="margin-top: 0;">
-      <div class="feature"><div class="feature-icon">🎨</div><h4>صور مرفقة</h4><p>أضف صورة للقصة، صورة لكل سؤال، صورة لكل لغز — تظهر أثناء اللعب.</p></div>
-      <div class="feature"><div class="feature-icon">🎶</div><h4>موسيقى خلفية مخصصة</h4><p>ارفع ملفات صوتك (MP3/OGG) واخترها كخلفية للتطبيق.</p></div>
-      <div class="feature"><div class="feature-icon">✍️</div><h4>خط مخصص</h4><p>استورد خطاً عربياً (TTF/OTF/WOFF) وسيتغير خط التطبيق بالكامل.</p></div>
-      <div class="feature"><div class="feature-icon">🔍</div><h4>تكبير النص</h4><p>في صفحة القصة، زر لتكبير الخط لمساعدة الأطفال على القراءة.</p></div>
-      <div class="feature"><div class="feature-icon">👥</div><h4>حساب ضيف</h4><p>جرب التطبيق بدون إنشاء حساب — مناسب للمعاينة أو الاستخدام المؤقت.</p></div>
-      <div class="feature"><div class="feature-icon">📈</div><h4>تقارير يومية</h4><p>تابع وقت لعب كل طفل، تقدمه في المستويات، ونقاطه من لوحة الوالدين.</p></div>
-    </div>
-
-    <!-- Footer -->
     <div class="footer">
-      <p>البرنامج <strong>حر ومجاني</strong> برخصة <strong>GNU GPL-3.0</strong> — يمكنك استخدامه، نسخه، تعديله، وتوزيعه بحرية.</p>
-      <p>المطور: <a href="https://github.com/SalehGNUTUX" target="_blank">SalehGNUTUX</a></p>
-      <p class="license">صُنع بـ ❤️ للطفل العربي المسلم — يعمل بدون إنترنت، بتحكم كامل للوالدين، ومحتوى قابل للإضافة دون انتظار تحديثات.</p>
-      <p>🔗 <a href="https://github.com/SalehGNUTUX/GT-SARARIM" target="_blank">GitHub Repository</a></p>
+      <p>البرنامج <strong>حر ومجاني</strong> برخصة GNU GPL-3.0 — صُنع بـ ❤️ للطفل العربي المسلم</p>
+      <p>المطور: <a href="https://github.com/SalehGNUTUX" target="_blank">SalehGNUTUX</a> • <a href="https://github.com/SalehGNUTUX/GT-SARARIM" target="_blank">GitHub</a></p>
     </div>
   </div>
 
   <script>
-    // ========================
-    // 1. Dark/Light Mode with system detection
-    // ========================
+    // 1. توليد عناصر السماء (شمس/قمر، سحب، نجوم، طيور)
+    const sky = document.getElementById('skyAnim');
+    function createSunMoon() {
+      const sunDiv = document.createElement('div'); sunDiv.className = 'sun'; sky.appendChild(sunDiv);
+      const moonDiv = document.createElement('div'); moonDiv.className = 'moon'; sky.appendChild(moonDiv);
+    }
+    function createClouds() {
+      // نضيف 8 سحب بأحجام ومواضع مختلفة
+      for (let i = 0; i < 8; i++) {
+        const cloud = document.createElement('div');
+        cloud.className = 'cloud';
+        // عرض عشوائي بين 120 و 220 بكسل، ارتفاع بين 50 و 90
+        const width = 120 + Math.random() * 100;
+        const height = 50 + Math.random() * 40;
+        cloud.style.width = width + 'px';
+        cloud.style.height = height + 'px';
+        // موضع رأسي عشوائي (10% إلى 70%)
+        cloud.style.top = Math.random() * 60 + 10 + '%';
+        // سرعة مختلفة لكل سحابة (مدة الحركة بين 25 و 40 ثانية)
+        const duration = 25 + Math.random() * 20;
+        cloud.style.animation = `floatCloudRightToLeft ${duration}s linear infinite`;
+        // تأخير عشوائي
+        cloud.style.animationDelay = Math.random() * -duration + 's';
+        sky.appendChild(cloud);
+      }
+    }
+    function createBirds() {
+      // نضيف 4 طيور فقط في الوضع الفاتح (سيتم التحكم بظهورها عبر CSS)
+      for (let i = 0; i < 4; i++) {
+        const bird = document.createElement('div');
+        bird.className = 'bird';
+        bird.innerHTML = '🐦';
+        bird.style.top = Math.random() * 30 + 10 + '%';
+        bird.style.left = '-50px';
+        const duration = 18 + Math.random() * 12;
+        bird.style.animation = `flyBird ${duration}s linear infinite`;
+        bird.style.animationDelay = Math.random() * 15 + 's';
+        sky.appendChild(bird);
+      }
+    }
+    function createStars() {
+      for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = 1.5 + Math.random() * 2 + 's';
+        sky.appendChild(star);
+      }
+    }
+    createSunMoon();
+    createClouds();
+    createBirds();
+    createStars();
+
+    // 2. Dark/Light mode مع حفظ التفضيل وتحسين ظهور النص admin
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     let currentTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
-
     function setTheme(theme) {
-      if (theme === 'dark') {
-        document.body.classList.add('dark');
-      } else {
-        document.body.classList.remove('dark');
-      }
+      if (theme === 'dark') document.body.classList.add('dark');
+      else document.body.classList.remove('dark');
       localStorage.setItem('theme', theme);
       currentTheme = theme;
     }
     setTheme(currentTheme);
-
-    themeToggle.addEventListener('click', () => {
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      setTheme(newTheme);
-    });
-
-    // Listen to system changes
+    themeToggle.addEventListener('click', () => { setTheme(currentTheme === 'light' ? 'dark' : 'light'); });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem('theme')) {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
+      if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
     });
 
-    // ========================
-    // 2. Floating Bubbles with mouse interaction
-    // ========================
-    const container = document.getElementById('bubblesContainer');
-    const bubbleCount = 45;
-    const bubbles = [];
-
-    // Create bubbles
-    for (let i = 0; i < bubbleCount; i++) {
-      const bubble = document.createElement('div');
-      bubble.classList.add('bubble');
-      const size = 20 + Math.random() * 60;
-      bubble.style.width = size + 'px';
-      bubble.style.height = size + 'px';
-      bubble.style.left = Math.random() * 100 + '%';
-      bubble.style.bottom = Math.random() * -100 + '%';
-      const duration = 8 + Math.random() * 12;
-      const delay = Math.random() * 15;
-      bubble.style.animation = `floatUp ${duration}s linear infinite`;
-      bubble.style.animationDelay = `${delay}s`;
-      bubble.style.setProperty('--duration', duration);
-      bubble.style.setProperty('--delay', delay);
-      bubble._animDuration = duration;
-      bubble._animDelay = delay;
-      container.appendChild(bubble);
-      bubbles.push(bubble);
-    }
-
-    // Define keyframes dynamically
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = `
-      @keyframes floatUp {
-        0% { transform: translateY(0) rotate(0deg); opacity: 0.6; bottom: -10%; }
-        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; bottom: 110%; }
-      }
-    `;
-    document.head.appendChild(styleSheet);
-
-    // Mouse interaction: move bubbles away from cursor
-    let mouseMoving = false;
-    let timeout;
-
-    document.addEventListener('mousemove', (e) => {
-      mouseMoving = true;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        mouseMoving = false;
-        bubbles.forEach(bubble => {
-          bubble.style.animation = `floatUp ${bubble._animDuration}s linear infinite`;
-          bubble.style.animationDelay = `${bubble._animDelay}s`;
-        });
-      }, 500);
-
-      bubbles.forEach(bubble => {
-        const rect = bubble.getBoundingClientRect();
-        const bubbleX = rect.left + rect.width/2;
-        const bubbleY = rect.top + rect.height/2;
-        const dx = bubbleX - e.clientX;
-        const dy = bubbleY - e.clientY;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const maxDist = 150;
-        if (dist < maxDist) {
-          const angle = Math.atan2(dy, dx);
-          const force = (maxDist - dist) / maxDist;
-          const pushX = Math.cos(angle) * force * 50;
-          const pushY = Math.sin(angle) * force * 50;
-          bubble.style.animation = 'none';
-          bubble.style.transform = `translate(${pushX}px, ${pushY}px)`;
-          setTimeout(() => {
-            if (!mouseMoving) {
-              bubble.style.animation = `floatUp ${bubble._animDuration}s linear infinite`;
-              bubble.style.animationDelay = `${bubble._animDelay}s`;
-              bubble.style.transform = '';
-            }
-          }, 300);
-        }
+    // 3. تفعيل النقر على البطاقات لتوسيع الشرح
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+      const descText = card.getAttribute('data-desc');
+      const fullDiv = card.querySelector('.full-desc');
+      if (descText && fullDiv) fullDiv.innerHTML = descText;
+      card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.classList.toggle('expanded');
       });
     });
 
-    // ========================
-    // 3. Smooth scroll
-    // ========================
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && href !== '') {
-          const target = document.querySelector(href);
-          if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth' });
-          }
+    // 4. تأثير ظهور البطاقات عند التمرير
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
         }
       });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.feature-card, .stat-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
     });
   </script>
 </body>
