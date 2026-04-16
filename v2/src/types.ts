@@ -80,7 +80,8 @@ export interface BackgroundSound {
   name: string;
   isBuiltIn: boolean;
   audioData?: string;
-  synthType?: 'nature' | 'rain' | 'quran_tones' | 'calm';
+  audioUrl?: string;   // Vite asset URL for built-in OGG files
+  synthType?: 'nature' | 'rain' | 'quran_tones' | 'calm' | 'stream_birds';
 }
 
 export interface CustomFont {
@@ -101,6 +102,7 @@ export interface SecurityQuestion {
 
 export interface ParentSettings {
   dailyTimeLimit: number;
+  timeLimitEnabled: boolean;      // هل تفعيل الحد الزمني اليومي
   lockedSections: string[];
   pin: string;
   parentName: string;
@@ -112,6 +114,8 @@ export interface ParentSettings {
   fontSettings: FontSettings;
   storyCategories: StoryCategory[];
   parentAvatar?: string; // localImage id
+  guestEnabled: boolean;
+  childRegistrationEnabled: boolean;
 }
 
 export interface LevelInfo {
@@ -148,6 +152,22 @@ export interface PendingDelete {
   expiresAt: number;
 }
 
+export interface CustomColoringRegion {
+  id: string;
+  path: string;
+  defaultFill: string;
+  label?: string;
+}
+
+export interface CustomColoringImage {
+  id: string;
+  nameAr: string;
+  viewBox: string;
+  regions: CustomColoringRegion[];
+  svgContent?: string;   // raw processed SVG markup for inline rendering
+  regionCount?: number;  // total clickable path count
+}
+
 export interface AppState {
   currentUser: UserProfile | null;
   users: UserProfile[];
@@ -157,9 +177,11 @@ export interface AppState {
   settings: ParentSettings;
   progress: Record<string, any>;
   theme: 'light' | 'dark';
+  themeIsDefault: boolean; // true = لم يختر المستخدم بعد (اتبع النظام)
   localImages: Record<string, LocalImage>;
   levelProgress: Record<string, LevelProgress>;
   backgroundSounds: BackgroundSound[];
   pendingDeletes: PendingDelete[];
   childrenBackup: UserProfile[];
+  customColoringImages: CustomColoringImage[];
 }

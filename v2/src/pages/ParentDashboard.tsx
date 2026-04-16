@@ -3,7 +3,7 @@ import {
   Settings, Users, BookOpen, Brain, Gamepad2, ShieldCheck, Plus, Trash2, Edit2,
   RefreshCcw, Clock, Lock, Download, Upload, Key, ImageIcon, Music, Type,
   Eye, EyeOff, Volume2, AlertTriangle, CheckCircle2, X, ChevronDown, Tag,
-  Lightbulb, PlayCircle, RotateCcw, HelpCircle, Layers
+  Lightbulb, PlayCircle, RotateCcw, HelpCircle, Layers, LogIn, Palette
 } from 'lucide-react';
 import { useStore, LEVELS } from '../store/useStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'motion/react';
-import { StoryCategory } from '../types';
+import { StoryCategory, CustomColoringImage, CustomColoringRegion } from '../types';
 
 const LEVEL_NAMES: Record<string, string> = { beginner:'تَمْهِيدِيّ', intermediate:'مُبْتَدِئ', advanced:'مُتَوَسِّط', expert:'مُتَقَدِّم' };
 const AGE_GROUPS = [{ v:'4-6', l:'4-6 سَنَوَاتٍ' },{ v:'6-8', l:'6-8 سَنَوَاتٍ' },{ v:'9-12', l:'9-12 سَنَةً' },{ v:'all', l:'الْكُلُّ' }];
@@ -132,6 +132,7 @@ export default function ParentDashboard() {
     backgroundSounds, addCustomSound, deleteSound, restoreSound, addFont, removeFont,
     addStoryCategory, updateStoryCategory, deleteStoryCategory,
     scheduledDelete, cancelDelete,
+    customColoringImages, addColoringImage, deleteColoringImage,
   } = store;
 
   // ── Auth ──
@@ -171,7 +172,15 @@ export default function ParentDashboard() {
   // ── Content add/edit dialogs ──
   const [storyDialog, setStoryDialog] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string|null>(null);
-  const [storyForm, setStoryForm] = useState({ title:'', content:'', category:'moral', ageGroup:'all', level:'beginner', textWithHarakat:'' });
+  // حقول النص: uncontrolled (refs) — الفئة/المستوى/الفئة العمرية: controlled (state)
+  const [storyCategory, setStoryCategory] = useState('moral');
+  const [storyAgeGroup, setStoryAgeGroup] = useState('all');
+  const [storyLevel, setStoryLevel] = useState('beginner');
+  const [storyFormKey, setStoryFormKey] = useState(0);
+  const storyInitRef = useRef({ title:'', content:'', textWithHarakat:'' });
+  const storyTitleRef = useRef<HTMLInputElement>(null);
+  const storyContentRef = useRef<HTMLTextAreaElement>(null);
+  const storyHarakatRef = useRef<HTMLTextAreaElement>(null);
   const [storyExercises, setStoryExercises] = useState<{text:string;opts:[string,string,string,string];explanation:string}[]>([]);
   const [storyImgFile, setStoryImgFile] = useState<File|null>(null);
   const [storyImgPreview, setStoryImgPreview] = useState('');
@@ -180,14 +189,34 @@ export default function ParentDashboard() {
 
   const [questionDialog, setQuestionDialog] = useState(false);
   const [editQuestionId, setEditQuestionId] = useState<string|null>(null);
-  const [qForm, setQForm] = useState({ text:'', opt0:'', opt1:'', opt2:'', opt3:'', category:'', ageGroup:'all', level:'beginner', explanation:'' });
+  // حقول النص: uncontrolled — الفئة العمرية/المستوى: controlled
+  const [qAgeGroup, setQAgeGroup] = useState('all');
+  const [qLevel, setQLevel] = useState('beginner');
+  const [qFormKey, setQFormKey] = useState(0);
+  const qInitRef = useRef({ text:'', opt0:'', opt1:'', opt2:'', opt3:'', category:'', explanation:'' });
+  const qTextRef = useRef<HTMLTextAreaElement>(null);
+  const qOpt0Ref = useRef<HTMLInputElement>(null);
+  const qOpt1Ref = useRef<HTMLInputElement>(null);
+  const qOpt2Ref = useRef<HTMLInputElement>(null);
+  const qOpt3Ref = useRef<HTMLInputElement>(null);
+  const qCatRef = useRef<HTMLInputElement>(null);
+  const qExpRef = useRef<HTMLInputElement>(null);
   const [qImgFile, setQImgFile] = useState<File|null>(null);
   const [qImgPreview, setQImgPreview] = useState('');
   const qImgRef = useRef<HTMLInputElement>(null);
 
   const [puzzleDialog, setPuzzleDialog] = useState(false);
   const [editPuzzleId, setEditPuzzleId] = useState<string|null>(null);
-  const [pForm, setPForm] = useState({ title:'', content:'', solution:'', type:'riddle', ageGroup:'all', level:'beginner', hint:'' });
+  // حقول النص: uncontrolled — النوع/الفئة العمرية/المستوى: controlled
+  const [pType, setPType] = useState('riddle');
+  const [pAgeGroup, setPAgeGroup] = useState('all');
+  const [pLevel, setPLevel] = useState('beginner');
+  const [pFormKey, setPFormKey] = useState(0);
+  const pInitRef = useRef({ title:'', content:'', solution:'', hint:'' });
+  const pTitleRef = useRef<HTMLInputElement>(null);
+  const pContentRef = useRef<HTMLTextAreaElement>(null);
+  const pSolutionRef = useRef<HTMLInputElement>(null);
+  const pHintRef = useRef<HTMLInputElement>(null);
   const [pImgFile, setPImgFile] = useState<File|null>(null);
   const [pImgPreview, setPImgPreview] = useState('');
   const pImgRef = useRef<HTMLInputElement>(null);
@@ -213,7 +242,11 @@ export default function ParentDashboard() {
   // ── Font settings ──
   const [fontFile, setFontFile] = useState<File|null>(null);
   const fontFileRef = useRef<HTMLInputElement>(null);
-  const importFileRef  = useRef<HTMLInputElement>(null);
+
+  // ── Custom coloring images ──
+  const [coloringName, setColoringName] = useState('');
+  const [coloringFile, setColoringFile] = useState<File|null>(null);
+  const coloringFileRef = useRef<HTMLInputElement>(null);
 
   // ── Preview ──
   const [preview, setPreview] = useState<{item:any;type:string}|null>(null);
@@ -221,6 +254,8 @@ export default function ParentDashboard() {
   // ── Reset dialog ──
   const [resetDialog, setResetDialog] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetPasswordError, setResetPasswordError] = useState('');
 
   // ── Image file refs ──
   const storyImgRef = useRef<HTMLInputElement>(null);
@@ -318,16 +353,23 @@ export default function ParentDashboard() {
   const openStory = (story?: any) => {
     if (story) {
       setEditStoryId(story.id);
-      setStoryForm({ title:story.title, content:story.content, category:story.category||'moral', ageGroup:story.ageGroup||'all', level:story.level||'beginner', textWithHarakat:story.textWithHarakat||'' });
+      setStoryCategory(story.category||'moral');
+      setStoryAgeGroup(story.ageGroup||'all');
+      setStoryLevel(story.level||'beginner');
+      storyInitRef.current = { title:story.title, content:story.content, textWithHarakat:story.textWithHarakat||'' };
       setStoryExercises((story.exercises||[]).map((e:any) => ({ text:e.text, opts:[e.options[0]||'', e.options[1]||'', e.options[2]||'', e.options[3]||''], explanation:e.explanation||'' })));
       setStoryImgPreview(story.image && localImages[story.image] ? localImages[story.image].data : story.image||'');
     } else {
       setEditStoryId(null);
-      setStoryForm({ title:'', content:'', category:'moral', ageGroup:'all', level:'beginner', textWithHarakat:'' });
+      setStoryCategory('moral');
+      setStoryAgeGroup('all');
+      setStoryLevel('beginner');
+      storyInitRef.current = { title:'', content:'', textWithHarakat:'' };
       setStoryExercises([]);
       setStoryImgPreview('');
     }
     setStoryImgFile(null); setStoryEmoji(''); setShowStoryEmojiPicker(false);
+    setStoryFormKey(k => k + 1);
     setStoryDialog(true);
   };
 
@@ -335,23 +377,25 @@ export default function ParentDashboard() {
   const removeExercise = (i:number) => setStoryExercises(e => e.filter((_,j)=>j!==i));
 
   const saveStory = async () => {
-    if (!storyForm.title.trim() || !storyForm.content.trim()) return;
+    const title = storyTitleRef.current?.value?.trim() || '';
+    const content = storyContentRef.current?.value?.trim() || '';
+    if (!title || !content) return;
+    const textWithHarakat = storyHarakatRef.current?.value || '';
     let imgId = '';
     if (storyImgFile) {
       imgId = Date.now().toString();
       await addLocalImage(imgId, storyImgFile);
     } else if (storyEmoji && !storyImgPreview) {
-      // convert emoji to SVG data URL stored inline
       imgId = `emoji:${storyEmoji}`;
     }
     const exercises = storyExercises.filter(e=>e.text.trim()&&e.opts[0].trim()).map((e,i) => ({
       id: `ex_${Date.now()}_${i}`,
       text: e.text,
       options: e.opts.filter(Boolean),
-      correctAnswer: 0, // always index 0
+      correctAnswer: 0,
       explanation: e.explanation
     }));
-    const data = { ...storyForm, image:imgId||( editStoryId ? stories.find(s=>s.id===editStoryId)?.image||'' : '' ), exercises, ageGroup:storyForm.ageGroup as any, level:storyForm.level as any };
+    const data = { title, content, textWithHarakat, category: storyCategory, image:imgId||( editStoryId ? stories.find(s=>s.id===editStoryId)?.image||'' : '' ), exercises, ageGroup: storyAgeGroup as any, level: storyLevel as any };
     if (editStoryId) updateStory(editStoryId, data);
     else addStory({ id: Date.now().toString(), ...data });
     setStoryDialog(false);
@@ -361,8 +405,9 @@ export default function ParentDashboard() {
   const openQuestion = (q?: any) => {
     if (q) {
       setEditQuestionId(q.id);
-      setQForm({ text:q.text, opt0:q.options[0]||'', opt1:q.options[1]||'', opt2:q.options[2]||'', opt3:q.options[3]||'', category:q.category, ageGroup:q.ageGroup, level:q.level||'beginner', explanation:q.explanation||'' });
-      // تحميل الصورة الموجودة عند التعديل
+      setQAgeGroup(q.ageGroup);
+      setQLevel(q.level || 'beginner');
+      qInitRef.current = { text:q.text, opt0:q.options[0]||'', opt1:q.options[1]||'', opt2:q.options[2]||'', opt3:q.options[3]||'', category:q.category, explanation:q.explanation||'' };
       if (q.image) {
         const stored = localImages[q.image];
         setQImgPreview(stored ? stored.data : (q.image.startsWith('data:') ? q.image : ''));
@@ -371,32 +416,36 @@ export default function ParentDashboard() {
       }
     } else {
       setEditQuestionId(null);
-      setQForm({ text:'', opt0:'', opt1:'', opt2:'', opt3:'', category:'', ageGroup:'all', level:'beginner', explanation:'' });
+      setQAgeGroup('all');
+      setQLevel('beginner');
+      qInitRef.current = { text:'', opt0:'', opt1:'', opt2:'', opt3:'', category:'', explanation:'' };
       setQImgPreview('');
     }
     setQImgFile(null);
+    setQFormKey(k => k + 1);
     setQuestionDialog(true);
   };
 
   const saveQuestion = async () => {
-    if (!qForm.text.trim()||!qForm.opt0.trim()) return;
-    const opts = [qForm.opt0, qForm.opt1, qForm.opt2, qForm.opt3].filter(Boolean);
+    const text = qTextRef.current?.value?.trim() || '';
+    const opt0 = qOpt0Ref.current?.value?.trim() || '';
+    if (!text || !opt0) return;
+    const opts = [opt0, qOpt1Ref.current?.value||'', qOpt2Ref.current?.value||'', qOpt3Ref.current?.value||''].filter(s => s.trim());
+    const category = qCatRef.current?.value?.trim() || '';
+    const explanation = qExpRef.current?.value?.trim() || '';
 
     let imageId: string | undefined;
     if (qImgFile) {
-      // صورة جديدة محمّلة
       imageId = Date.now().toString();
       await addLocalImage(imageId, qImgFile);
     } else if (!qImgPreview) {
-      // المستخدم حذف الصورة (ضغط ✕) — لا صورة
       imageId = undefined;
     } else if (editQuestionId) {
-      // لم تتغير الصورة — احفظ المعرّف القديم
       const existing = questions.find(q => q.id === editQuestionId);
       imageId = existing?.image || undefined;
     }
 
-    const data = { text:qForm.text, options:opts, correctAnswer:0, category:qForm.category||'عَامّ', ageGroup:qForm.ageGroup as any, level:qForm.level as any, explanation:qForm.explanation, image:imageId };
+    const data = { text, options:opts, correctAnswer:0, category:category||'عَامّ', ageGroup:qAgeGroup as any, level:qLevel as any, explanation, image:imageId };
     if (editQuestionId) updateQuestion(editQuestionId, data);
     else store.addQuestion({ id: Date.now().toString(), ...data });
     setQuestionDialog(false);
@@ -406,8 +455,10 @@ export default function ParentDashboard() {
   const openPuzzle = (p?: any) => {
     if (p) {
       setEditPuzzleId(p.id);
-      setPForm({ title:p.title, content:p.content, solution:p.solution, type:p.type, ageGroup:p.ageGroup, level:p.level||'beginner', hint:p.hint||'' });
-      // تحميل الصورة الموجودة عند التعديل
+      setPType(p.type);
+      setPAgeGroup(p.ageGroup);
+      setPLevel(p.level || 'beginner');
+      pInitRef.current = { title:p.title, content:p.content, solution:p.solution, hint:p.hint||'' };
       if (p.image) {
         const stored = localImages[p.image];
         setPImgPreview(stored ? stored.data : (p.image.startsWith('data:') ? p.image : ''));
@@ -416,15 +467,23 @@ export default function ParentDashboard() {
       }
     } else {
       setEditPuzzleId(null);
-      setPForm({ title:'', content:'', solution:'', type:'riddle', ageGroup:'all', level:'beginner', hint:'' });
+      setPType('riddle');
+      setPAgeGroup('all');
+      setPLevel('beginner');
+      pInitRef.current = { title:'', content:'', solution:'', hint:'' };
       setPImgPreview('');
     }
     setPImgFile(null);
+    setPFormKey(k => k + 1);
     setPuzzleDialog(true);
   };
 
   const savePuzzle = async () => {
-    if (!pForm.title.trim()||!pForm.content.trim()||!pForm.solution.trim()) return;
+    const title = pTitleRef.current?.value?.trim() || '';
+    const content = pContentRef.current?.value?.trim() || '';
+    const solution = pSolutionRef.current?.value?.trim() || '';
+    if (!title || !content || !solution) return;
+    const hint = pHintRef.current?.value || '';
 
     let imageId: string | undefined;
     if (pImgFile) {
@@ -437,7 +496,7 @@ export default function ParentDashboard() {
       imageId = existing?.image || undefined;
     }
 
-    const data = { ...pForm, ageGroup:pForm.ageGroup as any, level:pForm.level as any, image:imageId };
+    const data = { title, content, solution, hint, type:pType, ageGroup:pAgeGroup as any, level:pLevel as any, image:imageId };
     if (editPuzzleId) store.updatePuzzle(editPuzzleId, data);
     else store.addPuzzle({ id: Date.now().toString(), ...data });
     setPuzzleDialog(false);
@@ -492,6 +551,52 @@ export default function ParentDashboard() {
     document.getElementById(`custom-font-${fontId}`)?.remove();
     document.head.appendChild(style);
     document.documentElement.style.setProperty('--app-font-override', `'${fontId}', 'Ubuntu Arabic', sans-serif`);
+  };
+
+  // ── CUSTOM COLORING IMAGE ──
+  function parseSvgFile(svgText: string): { viewBox: string; svgContent: string; regionCount: number } {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgText, 'image/svg+xml');
+    const svgEl = doc.querySelector('svg');
+    if (!svgEl) return { viewBox: '0 0 200 200', svgContent: '', regionCount: 0 };
+
+    const viewBox = svgEl.getAttribute('viewBox') || '0 0 200 200';
+
+    // Tag every clickable path/shape with a data-region-id for event delegation
+    const shapes = Array.from(doc.querySelectorAll('path, rect, circle, ellipse, polygon'));
+    shapes.forEach((el, i) => {
+      el.setAttribute('data-region-id', `r${i}`);
+      el.setAttribute('style', `cursor:pointer;transition:fill 0.2s;${el.getAttribute('style') || ''}`);
+      // Default Potrace fill is black (#000000) — keep it; coloring replaces it on click
+    });
+
+    // Make the SVG itself responsive
+    svgEl.setAttribute('width', '100%');
+    svgEl.setAttribute('height', '100%');
+    svgEl.removeAttribute('xmlns:xlink');
+
+    // Serialize back to string — browser applies transforms correctly when rendered inline
+    const serializer = new XMLSerializer();
+    const svgContent = serializer.serializeToString(svgEl);
+
+    return { viewBox, svgContent, regionCount: shapes.length };
+  }
+
+  const uploadColoringImage = async () => {
+    if (!coloringName.trim() || !coloringFile) return;
+    const text = await coloringFile.text();
+    const { viewBox, svgContent, regionCount } = parseSvgFile(text);
+    if (regionCount === 0) { alert('لَمْ يُعْثَرْ عَلَى أَشْكَالٍ فِي الْمَلَفِّ'); return; }
+    const img: CustomColoringImage = {
+      id: `coloring_${Date.now()}`,
+      nameAr: coloringName.trim(),
+      viewBox,
+      regions: [],       // unused for SVG-content images
+      svgContent,
+      regionCount,
+    };
+    addColoringImage(img);
+    setColoringName(''); setColoringFile(null);
   };
 
   const handleImport = (file: File) => {
@@ -625,17 +730,19 @@ export default function ParentDashboard() {
         <h2 className="text-xl font-black dark:text-white flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-[#FF6B6B]"/>لَوْحَةُ الْوَالِدَيْنِ</h2>
         <div className="flex gap-2">
           <>
-          <input ref={importFileRef} type="file" accept=".json" className="hidden" onChange={e=>{const f=e.target.files?.[0]; if(f) handleImport(f); e.target.value='';}}/>
-          <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl" onClick={()=>importFileRef.current?.click()}><Upload className="w-4 h-4"/>اسْتِيرَادٌ</Button>
-          <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl" onClick={exportData}><Download className="w-4 h-4"/>تَصْدِيرٌ</Button>
+          <label className="inline-flex items-center gap-1 cursor-pointer border rounded-xl px-3 py-1.5 text-sm font-medium dark:border-[#444] dark:text-white hover:bg-accent transition-colors">
+            <Upload className="w-4 h-4"/>اسْتِيرَادٌ
+            <input type="file" accept=".json,application/json" className="hidden" onChange={e=>{const f=e.target.files?.[0]; if(f) handleImport(f); e.target.value='';}}/>
+          </label>
+          <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl" onClick={()=>exportData()}><Download className="w-4 h-4"/>تَصْدِيرٌ</Button>
         </>
           <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl text-[#FF6B6B] border-[#FF6B6B]/50" onClick={()=>setResetDialog(true)}><RefreshCcw className="w-4 h-4"/>إِعَادَةٌ</Button>
         </div>
       </div>
 
       <Tabs defaultValue="children">
-        <TabsList className="grid grid-cols-5 rounded-2xl dark:bg-[#333] h-auto p-1 gap-1">
-          {[['children','👦','أَبْنَاءٌ'],['content','📚','مُحْتَوَى'],['settings','⚙️','إِعْدَادَاتٌ'],['sounds','🎵','أَصْوَاتٌ'],['fonts','🔤','خُطُوطٌ']].map(([v,ic,lb])=>(
+        <TabsList className="grid grid-cols-6 rounded-2xl dark:bg-[#333] h-auto p-1 gap-1">
+          {[['children','👦','أَبْنَاءٌ'],['content','📚','مُحْتَوَى'],['settings','⚙️','إِعْدَادَاتٌ'],['sounds','🎵','أَصْوَاتٌ'],['fonts','🔤','خُطُوطٌ'],['coloring','🎨','تَلْوِينٌ']].map(([v,ic,lb])=>(
             <TabsTrigger key={v} value={v} className="rounded-xl flex flex-col gap-0.5 py-2 text-[11px] dark:text-white data-[state=active]:dark:bg-[#222]">
               <span>{ic}</span><span>{lb}</span>
             </TabsTrigger>
@@ -658,6 +765,17 @@ export default function ParentDashboard() {
                     <p className="font-black dark:text-white">{child.name}</p>
                     <p className="text-xs text-[#636E72] dark:text-[#A0A0A0]">{child.ageGroup} • {child.points} نُقْطَةً</p>
                     {child.grade && <p className="text-xs text-[#636E72]">{child.grade}</p>}
+                    {/* وقت اللعب اليوم مع زر رفع الحظر */}
+                    {(child.playTimeToday || 0) > 0 && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-[#FF9F43]">🕐 {child.playTimeToday} دَقِيقَةٌ الْيَوْمَ</p>
+                        <button
+                          onClick={() => updateUser(child.id, { playTimeToday: 0 })}
+                          className="text-[10px] px-2 py-0.5 bg-[#4CAF50]/10 text-[#4CAF50] rounded-full hover:bg-[#4CAF50]/20 transition-colors">
+                          رَفْعُ الْحَظْرِ
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" className="dark:text-white" onClick={()=>openChild(child)}><Edit2 className="w-4 h-4"/></Button>
@@ -784,10 +902,19 @@ export default function ParentDashboard() {
           <Card className="rounded-2xl dark:bg-[#222] dark:border-[#333] border-2">
             <CardHeader className="pb-2"><CardTitle className="text-sm flex gap-2 items-center dark:text-white"><Clock className="w-4 h-4 text-[#54A0FF]"/>وَقْتُ اللَّعِبِ الْيَوْمِيِّ</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Input type="number" min="10" max="180" value={settings.dailyTimeLimit} onChange={e=>updateSettings({ dailyTimeLimit:+e.target.value })} className="w-24 text-center dark:bg-[#333] dark:border-[#444] dark:text-white"/>
-                <span className="text-sm dark:text-white">دَقِيقَةٌ</span>
+              {/* تفعيل/إيقاف الحد الزمني */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm dark:text-white">تَفْعِيلُ الْحَدِّ الزَّمَنِيِّ</span>
+                <Switch
+                  checked={!!settings.timeLimitEnabled}
+                  onCheckedChange={v => updateSettings({ timeLimitEnabled: v })}/>
               </div>
+              {settings.timeLimitEnabled && (
+                <div className="flex items-center gap-3">
+                  <Input type="number" min="10" max="180" value={settings.dailyTimeLimit} onChange={e=>updateSettings({ dailyTimeLimit:+e.target.value })} className="w-24 text-center dark:bg-[#333] dark:border-[#444] dark:text-white"/>
+                  <span className="text-sm dark:text-white">دَقِيقَةٌ كَحَدٍّ افْتِرَاضِيٍّ</span>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -801,6 +928,33 @@ export default function ParentDashboard() {
                   <Switch checked={settings.lockedSections.includes(k)} onCheckedChange={v=>updateSettings({ lockedSections: v ? [...settings.lockedSections,k] : settings.lockedSections.filter(s=>s!==k) })}/>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          {/* Guest & registration toggles */}
+          <Card className="rounded-2xl dark:bg-[#222] dark:border-[#333] border-2">
+            <CardHeader className="pb-2"><CardTitle className="text-sm flex gap-2 items-center dark:text-white"><LogIn className="w-4 h-4 text-[#FF9F43]"/>صَلَاحِيَّاتُ صَفْحَةِ الدُّخُولِ</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm dark:text-white">الدُّخُولُ كَضَيْفٍ</p>
+                  <p className="text-xs text-[#636E72] dark:text-[#A0A0A0] mt-0.5">يُظْهِرُ زِرَّ "دُخُولٌ كَضَيْفٍ"</p>
+                </div>
+                <Switch
+                  checked={settings.guestEnabled !== false}
+                  onCheckedChange={v => updateSettings({ guestEnabled: v })}
+                />
+              </div>
+              <div className="border-t dark:border-[#333] pt-3 flex items-center justify-between">
+                <div>
+                  <p className="text-sm dark:text-white">إِنْشَاءُ حِسَابَاتٍ جَدِيدَةٍ</p>
+                  <p className="text-xs text-[#636E72] dark:text-[#A0A0A0] mt-0.5">يُظْهِرُ زِرَّ "إِضَافَةُ حِسَابٍ جَدِيدٍ"</p>
+                </div>
+                <Switch
+                  checked={settings.childRegistrationEnabled !== false}
+                  onCheckedChange={v => updateSettings({ childRegistrationEnabled: v })}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -970,6 +1124,39 @@ export default function ParentDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ──────── CUSTOM COLORING IMAGES ──────── */}
+        <TabsContent value="coloring" className="space-y-4 mt-4">
+          <Card className="rounded-2xl dark:bg-[#222] dark:border-[#333] border-2">
+            <CardHeader className="pb-2"><CardTitle className="text-sm dark:text-white flex gap-2 items-center"><Palette className="w-4 h-4 text-[#FD79A8]"/>صُورُ التَّلْوِينِ الْمُخَصَّصَةُ</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-xs text-[#636E72] dark:text-[#A0A0A0]">ارْفَعْ مَلَفَّ SVG لِيَظْهَرَ فِي نَشَاطِ التَّلْوِينِ</p>
+              <Input placeholder="اسم الصورة بالعربية..." value={coloringName} onChange={e=>setColoringName(e.target.value)} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
+              <input ref={coloringFileRef} type="file" accept=".svg,image/svg+xml" className="hidden" onChange={e=>setColoringFile(e.target.files?.[0]||null)}/>
+              <Button variant="outline" className="w-full dark:border-[#444] dark:text-white rounded-xl" onClick={()=>coloringFileRef.current?.click()}>
+                {coloringFile ? `📁 ${coloringFile.name}` : 'اِخْتَرْ مَلَفَّ SVG'}
+              </Button>
+              <Button className="w-full bg-[#FD79A8] hover:bg-[#e84393] rounded-xl" onClick={uploadColoringImage} disabled={!coloringName.trim()||!coloringFile}>إِضَافَةٌ</Button>
+            </CardContent>
+          </Card>
+
+          {customColoringImages.length > 0 && (
+            <Card className="rounded-2xl dark:bg-[#222] dark:border-[#333] border-2">
+              <CardHeader className="pb-2"><CardTitle className="text-sm dark:text-white flex gap-2 items-center"><Palette className="w-4 h-4 text-[#FD79A8]"/>الصُّوَرُ الْمُضَافَةُ ({customColoringImages.length})</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                {customColoringImages.map(img => (
+                  <div key={img.id} className="flex items-center justify-between bg-[#FFF0F6] dark:bg-[#2A1520] rounded-xl px-3 py-2">
+                    <div>
+                      <p className="font-bold text-sm dark:text-white">{img.nameAr}</p>
+                      <p className="text-xs text-[#636E72] dark:text-[#A0A0A0]">{img.regions.length} مَنْطَقَةٌ</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="w-8 h-8 text-[#FF6B6B]" onClick={()=>deleteColoringImage(img.id)}><Trash2 className="w-4 h-4"/></Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
       </Tabs>
 
       {/* ════════ DIALOGS ════════ */}
@@ -1029,25 +1216,25 @@ export default function ParentDashboard() {
               <DialogTitle className="dark:text-white flex-1 text-center">{editStoryId?'تَعْدِيلُ الْقِصَّةِ':'إِضَافَةُ قِصَّةٍ'}</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="space-y-3 overflow-y-auto flex-1 pb-2">
-            <Input placeholder="عُنْوَانُ الْقِصَّةِ *" value={storyForm.title} onChange={e=>setStoryForm(f=>({...f,title:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
+          <div key={storyFormKey} className="space-y-3 overflow-y-auto flex-1 pb-2">
+            <input ref={storyTitleRef} defaultValue={storyInitRef.current.title} placeholder="عُنْوَانُ الْقِصَّةِ *" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
 
             <div className="grid grid-cols-2 gap-2">
-              <select value={storyForm.category} onChange={e=>setStoryForm(f=>({...f,category:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <select value={storyCategory} onChange={e=>setStoryCategory(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 {settings.storyCategories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
               </select>
-              <select value={storyForm.ageGroup} onChange={e=>setStoryForm(f=>({...f,ageGroup:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <select value={storyAgeGroup} onChange={e=>setStoryAgeGroup(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 {AGE_GROUPS.map(a=><option key={a.v} value={a.v}>{a.l}</option>)}
               </select>
             </div>
 
-            <select value={storyForm.level} onChange={e=>setStoryForm(f=>({...f,level:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+            <select value={storyLevel} onChange={e=>setStoryLevel(e.target.value)} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
               {LEVELS.map(l=><option key={l.id} value={l.id}>{l.icon} {l.nameAr} — {l.description}</option>)}
             </select>
 
-            <textarea rows={3} placeholder="نَصُّ الْقِصَّةِ *" value={storyForm.content} onChange={e=>setStoryForm(f=>({...f,content:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
+            <textarea ref={storyContentRef} rows={3} defaultValue={storyInitRef.current.content} placeholder="نَصُّ الْقِصَّةِ *" className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
 
-            <textarea rows={3} placeholder="النَّصُّ مَعَ الشَّكْلِ الْكَامِلِ (اخْتِيَارِيٌّ — مُفِيدٌ لِتَعَلُّمِ الْقِرَاءَةِ)" value={storyForm.textWithHarakat} onChange={e=>setStoryForm(f=>({...f,textWithHarakat:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
+            <textarea ref={storyHarakatRef} rows={3} defaultValue={storyInitRef.current.textWithHarakat} placeholder="النَّصُّ مَعَ الشَّكْلِ الْكَامِلِ (اخْتِيَارِيٌّ — مُفِيدٌ لِتَعَلُّمِ الْقِرَاءَةِ)" className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
 
             {/* Image or Emoji */}
             <div className="space-y-2">
@@ -1118,23 +1305,23 @@ export default function ParentDashboard() {
               <DialogTitle className="dark:text-white flex-1 text-center">{editQuestionId?'تَعْدِيلُ السُّؤَالِ':'إِضَافَةُ سُؤَالٍ'}</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="space-y-3 overflow-y-auto flex-1 pb-2">
+          <div key={qFormKey} className="space-y-3 overflow-y-auto flex-1 pb-2">
             <p className="text-[10px] text-[#636E72] dark:text-[#A0A0A0] bg-[#FFF8E1] dark:bg-[#332B00] p-2 rounded-lg">⚡ الْحَقْلُ الْأَوَّلُ = الْإِجَابَةُ الصَّحِيحَةُ — سَتُخْلَطُ أَمَاكِنُ الْإِجَابَاتِ عِنْدَ الِاخْتِبَارِ</p>
-            <textarea rows={2} placeholder="نَصُّ السُّؤَالِ *" value={qForm.text} onChange={e=>setQForm(f=>({...f,text:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
-            {[['opt0','الْإِجَابَةُ الصَّحِيحَةُ ✓ *',true],['opt1','الِاخْتِيَارُ 2 *',false],['opt2','الِاخْتِيَارُ 3 (اخْتِيَارِيٌّ)',false],['opt3','الِاخْتِيَارُ 4 (اخْتِيَارِيٌّ)',false]].map(([k,ph,isCorrect])=>(
-              <Input key={k as string} placeholder={ph as string} value={(qForm as any)[k as string]} onChange={e=>setQForm(f=>({...f,[k as string]:e.target.value}))}
-                className={`dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl ${isCorrect?'border-[#4CAF50] bg-[#F0FFF4] dark:bg-[#1B3B27]':''}`}/>
-            ))}
+            <textarea ref={qTextRef} rows={2} defaultValue={qInitRef.current.text} placeholder="نَصُّ السُّؤَالِ *" className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
+            <input ref={qOpt0Ref} defaultValue={qInitRef.current.opt0} placeholder="الْإِجَابَةُ الصَّحِيحَةُ ✓ *" className="w-full px-3 py-2 rounded-xl border-2 border-[#4CAF50] bg-[#F0FFF4] dark:bg-[#1B3B27] dark:border-[#4CAF50] dark:text-white text-sm"/>
+            <input ref={qOpt1Ref} defaultValue={qInitRef.current.opt1} placeholder="الِاخْتِيَارُ 2 *" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
+            <input ref={qOpt2Ref} defaultValue={qInitRef.current.opt2} placeholder="الِاخْتِيَارُ 3 (اخْتِيَارِيٌّ)" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
+            <input ref={qOpt3Ref} defaultValue={qInitRef.current.opt3} placeholder="الِاخْتِيَارُ 4 (اخْتِيَارِيٌّ)" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
             <div className="grid grid-cols-2 gap-2">
-              <Input placeholder="الْفِئَةُ (مثل: دِين)" value={qForm.category} onChange={e=>setQForm(f=>({...f,category:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl text-sm"/>
-              <select value={qForm.ageGroup} onChange={e=>setQForm(f=>({...f,ageGroup:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <input ref={qCatRef} defaultValue={qInitRef.current.category} placeholder="الْفِئَةُ (مثل: دِين)" className="px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
+              <select value={qAgeGroup} onChange={e=>setQAgeGroup(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 {AGE_GROUPS.map(a=><option key={a.v} value={a.v}>{a.l}</option>)}
               </select>
             </div>
-            <select value={qForm.level} onChange={e=>setQForm(f=>({...f,level:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+            <select value={qLevel} onChange={e=>setQLevel(e.target.value)} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
               {LEVELS.map(l=><option key={l.id} value={l.id}>{l.icon} {l.nameAr}</option>)}
             </select>
-            <Input placeholder="تَفْسِيرٌ لِلْإِجَابَةِ (اخْتِيَارِيٌّ)" value={qForm.explanation} onChange={e=>setQForm(f=>({...f,explanation:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
+            <input ref={qExpRef} defaultValue={qInitRef.current.explanation} placeholder="تَفْسِيرٌ لِلْإِجَابَةِ (اخْتِيَارِيٌّ)" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
             <div>
               <input ref={qImgRef} type="file" accept="image/*" className="hidden" onChange={e=>{const f=e.target.files?.[0]; if(f){setQImgFile(f); const r=new FileReader(); r.onload=()=>setQImgPreview(r.result as string); r.readAsDataURL(f);}}}/>
               <Button variant="outline" className="w-full dark:border-[#444] dark:text-white rounded-xl text-sm" onClick={()=>qImgRef.current?.click()}>
@@ -1161,11 +1348,11 @@ export default function ParentDashboard() {
               <DialogTitle className="dark:text-white flex-1 text-center">{editPuzzleId?'تَعْدِيلُ اللُّغْزِ':'إِضَافَةُ لُغْزٍ'}</DialogTitle>
             </div>
           </DialogHeader>
-          <div className="space-y-3 overflow-y-auto flex-1 pb-2">
-            <Input placeholder="عُنْوَانُ اللُّغْزِ *" value={pForm.title} onChange={e=>setPForm(f=>({...f,title:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
-            <textarea rows={3} placeholder="نَصُّ اللُّغْزِ *" value={pForm.content} onChange={e=>setPForm(f=>({...f,content:e.target.value}))} className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
-            <Input placeholder="الْإِجَابَةُ الصَّحِيحَةُ *" value={pForm.solution} onChange={e=>setPForm(f=>({...f,solution:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl border-[#4CAF50] bg-[#F0FFF4] dark:bg-[#1B3B27]"/>
-            <Input placeholder="تَلْمِيحٌ (اخْتِيَارِيٌّ — يُكْشَفُ عِنْدَ الطَّلَبِ)" value={pForm.hint} onChange={e=>setPForm(f=>({...f,hint:e.target.value}))} className="dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
+          <div key={pFormKey} className="space-y-3 overflow-y-auto flex-1 pb-2">
+            <input ref={pTitleRef} defaultValue={pInitRef.current.title} placeholder="عُنْوَانُ اللُّغْزِ *" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
+            <textarea ref={pContentRef} rows={3} defaultValue={pInitRef.current.content} placeholder="نَصُّ اللُّغْزِ *" className="w-full p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm resize-none"/>
+            <input ref={pSolutionRef} defaultValue={pInitRef.current.solution} placeholder="الْإِجَابَةُ الصَّحِيحَةُ *" className="w-full px-3 py-2 rounded-xl border-2 border-[#4CAF50] bg-[#F0FFF4] dark:bg-[#1B3B27] dark:border-[#4CAF50] dark:text-white text-sm"/>
+            <input ref={pHintRef} defaultValue={pInitRef.current.hint} placeholder="تَلْمِيحٌ (اخْتِيَارِيٌّ — يُكْشَفُ عِنْدَ الطَّلَبِ)" className="w-full px-3 py-2 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm"/>
             <div>
               <input ref={pImgRef} type="file" accept="image/*" className="hidden" onChange={e=>{const f=e.target.files?.[0]; if(f){setPImgFile(f); const r=new FileReader(); r.onload=()=>setPImgPreview(r.result as string); r.readAsDataURL(f);}}}/>
               <Button variant="outline" className="w-full dark:border-[#444] dark:text-white rounded-xl text-sm" onClick={()=>pImgRef.current?.click()}>
@@ -1173,21 +1360,24 @@ export default function ParentDashboard() {
               </Button>
               {pImgPreview && (
                 <div className="relative mt-2">
-                  <img src={pImgPreview} className="w-full h-28 object-cover rounded-xl"/>
+                  <img src={pImgPreview} className="w-full h-28 object-cover rounded-xl" style={{filter:'blur(8px)'}}/>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-black/60 text-white text-xs px-2 py-1 rounded-lg">🔍 سَتَظْهَرُ وَاضِحَةً بَعْدَ الْإِجَابَةِ</span>
+                  </div>
                   <button onClick={()=>{setPImgFile(null); setPImgPreview('');}} className="absolute top-2 left-2 bg-[#FF6B6B] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">✕</button>
                 </div>
               )}
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <select value={pForm.type} onChange={e=>setPForm(f=>({...f,type:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <select value={pType} onChange={e=>setPType(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 <option value="riddle">لُغْزٌ</option>
                 <option value="logic">مَنْطِقٌ</option>
                 <option value="memory">ذَاكِرَةٌ</option>
               </select>
-              <select value={pForm.ageGroup} onChange={e=>setPForm(f=>({...f,ageGroup:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <select value={pAgeGroup} onChange={e=>setPAgeGroup(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 {AGE_GROUPS.map(a=><option key={a.v} value={a.v}>{a.l}</option>)}
               </select>
-              <select value={pForm.level} onChange={e=>setPForm(f=>({...f,level:e.target.value}))} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
+              <select value={pLevel} onChange={e=>setPLevel(e.target.value)} className="p-3 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] dark:bg-[#333] dark:text-white text-sm">
                 {LEVELS.map(l=><option key={l.id} value={l.id}>{l.nameAr}</option>)}
               </select>
             </div>
@@ -1292,26 +1482,45 @@ export default function ParentDashboard() {
       </Dialog>
 
       {/* Reset dialog */}
-      <Dialog open={resetDialog} onOpenChange={setResetDialog}>
+      <Dialog open={resetDialog} onOpenChange={(open) => { setResetDialog(open); if (!open) { setResetPassword(''); setResetPasswordError(''); } }}>
         <DialogContent className="max-w-sm dark:bg-[#222] dark:border-[#333]">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={()=>setResetDialog(false)} className="dark:text-white order-first"><X className="w-4 h-4"/></Button>
+              <Button variant="ghost" size="icon" onClick={()=>{ setResetDialog(false); setResetPassword(''); setResetPasswordError(''); }} className="dark:text-white order-first"><X className="w-4 h-4"/></Button>
               <DialogTitle className="text-[#FF6B6B] flex-1 text-center">تَحْذِيرٌ: إِعَادَةُ الضَّبْطِ</DialogTitle>
             </div>
           </DialogHeader>
           <div className="space-y-3">
             <div className="bg-[#FFF3CD] dark:bg-[#332B00] p-4 rounded-xl space-y-2">
               <AlertTriangle className="w-8 h-8 text-[#FF9F43] mx-auto"/>
-              <p className="text-sm text-center font-medium dark:text-white">سَيَتِمُّ مَسْحُ جَمِيعِ الْإِعْدَادَاتِ وَالْمُحْتَوَيَاتِ</p>
-              <p className="text-xs text-center text-[#4CAF50]">✓ سَيَتِمُّ حِفْظُ بَيَانَاتِ الْأَبْنَاءِ كَنُسْخَةٍ احْتِيَاطِيَّةٍ وَيُمْكِنُ اسْتِرْجَاعُهَا</p>
+              <p className="text-sm text-center font-medium dark:text-white">سَيَتِمُّ مَسْحُ جَمِيعِ الْإِعْدَادَاتِ وَالْمُحْتَوَيَاتِ الْمُضَافَةِ</p>
+              <p className="text-xs text-center text-[#4CAF50]">✓ سَيَتِمُّ أَخْذُ نُسْخَةٍ احْتِيَاطِيَّةٍ تِلْقَائِيًّا قَبْلَ الْمَسْحِ</p>
             </div>
-            <p className="text-sm dark:text-white text-center">اكْتُبْ <span className="font-bold text-[#FF6B6B]">تأكيد</span> لِلْمُتَابَعَةِ</p>
-            <Input value={resetConfirmText} onChange={e=>setResetConfirmText(e.target.value)} placeholder="تأكيد" className="text-center dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl"/>
+            <div className="space-y-1">
+              <Label className="dark:text-white text-sm">أَدْخِلْ كَلِمَةَ مُرُورِ الْوَالِدِ لِلتَّأْكِيدِ</Label>
+              <Input
+                type="password"
+                value={resetPassword}
+                onChange={e=>{ setResetPassword(e.target.value); setResetPasswordError(''); }}
+                placeholder="كَلِمَةُ الْمُرُورِ"
+                className={`text-center dark:bg-[#333] dark:border-[#444] dark:text-white rounded-xl ${resetPasswordError ? 'border-[#FF6B6B]' : ''}`}
+              />
+              {resetPasswordError && <p className="text-xs text-[#FF6B6B] text-center">{resetPasswordError}</p>}
+            </div>
           </div>
           <div className="space-y-2">
-            <Button className="w-full bg-[#FF6B6B] hover:bg-[#ee5253] rounded-xl py-4 font-black" disabled={resetConfirmText!=='تأكيد'} onClick={()=>{ resetToDefault(true); setResetDialog(false); setResetConfirmText(''); setIsAuthorized(false); }}>إِعَادَةُ الضَّبْطِ (مَعَ حِفْظِ الْأَبْنَاءِ)</Button>
-            <Button className="w-full bg-[#2D3436] hover:bg-[#4A4A4A] rounded-xl py-3 font-bold text-sm" disabled={resetConfirmText!=='تأكيد'} onClick={()=>{ resetToDefault(false); setResetDialog(false); setResetConfirmText(''); setIsAuthorized(false); }}>إِعَادَةُ الضَّبْطِ الْكَامِلَةُ</Button>
+            <Button className="w-full bg-[#FF6B6B] hover:bg-[#ee5253] rounded-xl py-4 font-black" onClick={async ()=>{
+              if (resetPassword !== settings.parentPassword) { setResetPasswordError('كَلِمَةُ الْمُرُورِ غَيْرُ صَحِيحَةٍ'); return; }
+              await exportData();
+              resetToDefault(true);
+              setResetDialog(false); setResetPassword(''); setResetPasswordError(''); setIsAuthorized(false);
+            }}>إِعَادَةُ الضَّبْطِ (مَعَ حِفْظِ الْأَبْنَاءِ)</Button>
+            <Button className="w-full bg-[#2D3436] hover:bg-[#4A4A4A] rounded-xl py-3 font-bold text-sm" onClick={async ()=>{
+              if (resetPassword !== settings.parentPassword) { setResetPasswordError('كَلِمَةُ الْمُرُورِ غَيْرُ صَحِيحَةٍ'); return; }
+              await exportData();
+              resetToDefault(false);
+              setResetDialog(false); setResetPassword(''); setResetPasswordError(''); setIsAuthorized(false);
+            }}>إِعَادَةُ الضَّبْطِ الْكَامِلَةُ</Button>
           </div>
         </DialogContent>
       </Dialog>

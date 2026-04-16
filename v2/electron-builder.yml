@@ -1,18 +1,16 @@
 appId: com.gnutux.gtsararim
 productName: GT-SARARIM
+homepage: https://salehgnutux.github.io/GT-SARARIM/
 directories:
-  output: release
+  output: dist_electron
   buildResources: build
 files:
   - dist/**/*
   - main.js
-  - fonts/**/*
 linux:
   target:
     - AppImage
     - deb
   category: Education
-  icon: public/GT-SARARIM-ICON.png
+  description: تطبيق تعليمي تفاعلي للأطفال المسلمين
   maintainer: SalehGNUTUX <salehoukiki@gmail.com>
-deb:
-  priority: optional

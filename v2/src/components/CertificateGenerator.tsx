@@ -20,14 +20,9 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({ user
         <meta charset="UTF-8">
         <title>شهادة إنجاز - ${user.name}</title>
         <style>
-        /* خط Ubuntu Arabic المحلي — يعمل بدون إنترنت */
-        @font-face {
-          font-family: 'AppArabic';
-          src: url('fonts/Ubuntu Arabic Regular.otf') format('opentype');
-          font-weight: normal;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         body {
-            font-family: 'AppArabic', 'Ubuntu Arabic', serif;
+            font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 40px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

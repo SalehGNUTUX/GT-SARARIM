@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Type, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { motion, AnimatePresence } from 'motion/react';
@@ -11,6 +11,19 @@ const BUILTIN_FONTS = [
 export function FontSelector() {
   const { settings, updateSettings, localImages } = useStore();
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // إغلاق عند النقر خارج القائمة
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
   const activeFamily = settings.fontSettings.fontFamily;
   const customFonts: any[] = settings.fontSettings.customFonts || [];
   const allFonts = [
@@ -25,15 +38,15 @@ export function FontSelector() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button
         onClick={() => setOpen(p => !p)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold border border-[#E5E5E5] dark:border-[#444] bg-white/80 dark:bg-[#222]/80 text-[#4A4A4A] dark:text-[#E0E0E0] hover:border-[#A29BFE] transition-all"
+        className="flex items-center gap-1 w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 justify-center rounded-full text-sm font-bold border border-[#E5E5E5] dark:border-[#444] bg-white/80 dark:bg-[#222]/80 text-[#4A4A4A] dark:text-[#E0E0E0] hover:border-[#A29BFE] transition-all"
         title="تَغْيِيرُ الْخَطِّ"
       >
-        <Type className="w-4 h-4 text-[#A29BFE]"/>
-        <span className="max-w-[80px] truncate text-xs">{active.label}</span>
-        {open ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}
+        <Type className="w-4 h-4 text-[#A29BFE] shrink-0"/>
+        <span className="hidden sm:block max-w-[80px] truncate text-xs">{active.label}</span>
+        <span className="hidden sm:block">{open ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}</span>
       </button>
 
       <AnimatePresence>
@@ -42,7 +55,8 @@ export function FontSelector() {
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
-            className="absolute left-0 top-full mt-2 z-50 bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] rounded-2xl shadow-xl min-w-[200px] overflow-hidden"
+            style={{ position: 'fixed', top: '60px', left: 0, right: 0, margin: '0 auto', width: '220px', maxWidth: 'calc(100vw - 32px)', zIndex: 9999 }}
+            className="bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] rounded-2xl shadow-xl overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <div className="p-2 space-y-1">

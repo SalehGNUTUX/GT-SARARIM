@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Volume2, VolumeX, Music, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Volume2, VolumeX, ChevronDown, ChevronUp } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -7,27 +7,36 @@ export function SoundControls() {
   const { settings, updateSettings, backgroundSounds } = useStore();
   const { soundEnabled, backgroundSoundId, soundVolume } = settings;
   const [expanded, setExpanded] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // إغلاق عند النقر خارج القائمة
+  useEffect(() => {
+    if (!expanded) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [expanded]);
 
   const toggle = () => updateSettings({ soundEnabled: !soundEnabled });
   const setSound = (id: string) => updateSettings({ backgroundSoundId: id, soundEnabled: true });
 
-  const soundIcons: Record<string, string> = {
-    stream_birds: '🌊', rain: '🌧️', nature: '🌿', calm: '🎵',
-  };
-
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button
         onClick={() => setExpanded(e => !e)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all ${
+        className={`flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:gap-1.5 sm:px-3 sm:py-1.5 rounded-full text-sm font-bold transition-all ${
           soundEnabled
             ? 'bg-[#4CAF50]/15 text-[#4CAF50] border border-[#4CAF50]/30'
             : 'bg-[#F0F0F0] dark:bg-[#333] text-[#636E72] dark:text-[#A0A0A0] border border-[#E5E5E5] dark:border-[#444]'
         }`}
         title="التحكم في الصوت"
       >
-        {soundEnabled ? <Volume2 className="w-4 h-4"/> : <VolumeX className="w-4 h-4"/>}
-        {expanded ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}
+        {soundEnabled ? <Volume2 className="w-4 h-4 shrink-0"/> : <VolumeX className="w-4 h-4 shrink-0"/>}
+        <span className="hidden sm:block">{expanded ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}</span>
       </button>
 
       <AnimatePresence>
@@ -36,7 +45,8 @@ export function SoundControls() {
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            className="absolute left-0 top-full mt-2 z-50 bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] rounded-2xl shadow-xl p-3 min-w-[200px]"
+            style={{ position: 'fixed', top: '60px', left: 0, right: 0, margin: '0 auto', width: '260px', maxWidth: 'calc(100vw - 32px)', zIndex: 9999 }}
+            className="bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] rounded-2xl shadow-xl p-3"
             onClick={e => e.stopPropagation()}
           >
             {/* Toggle */}
@@ -72,7 +82,6 @@ export function SoundControls() {
                       : 'hover:bg-[#F0F0F0] dark:hover:bg-[#333] text-[#4A4A4A] dark:text-[#E0E0E0]'
                   }`}
                 >
-                  <span>{soundIcons[s.synthType || ''] || '🎶'}</span>
                   <span className="flex-1">{s.name}</span>
                   {backgroundSoundId === s.id && soundEnabled && <span className="text-xs">▶</span>}
                 </button>

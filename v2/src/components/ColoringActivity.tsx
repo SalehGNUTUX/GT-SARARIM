@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { RefreshCw, Trophy, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useStore } from '../store/useStore';
+import { CustomColoringImage } from '../types';
 import confetti from 'canvas-confetti';
 
 const COLORS = [
@@ -24,6 +25,8 @@ interface ColoringShape {
   emoji: string;
   viewBox: string;
   regions: ColorRegion[];
+  svgContent?: string;   // raw SVG markup for inline rendering (custom uploads)
+  regionCount?: number;  // total path count for custom SVGs
 }
 
 const COLORING_SHAPES: ColoringShape[] = [
@@ -43,19 +46,18 @@ const COLORING_SHAPES: ColoringShape[] = [
     ]
   },
   {
-    id: 'flower', nameAr: 'الزَّهْرَةُ', emoji: '🌸', viewBox: '0 0 200 220',
+    id: 'flower', nameAr: 'الزَّهْرَةُ', emoji: '🌸', viewBox: '0 0 220 230',
     regions: [
-      { id: 'center', path: 'M100,95 A18,18 0 1,1 99.9,95Z', defaultFill: '#FFE08A', label: 'مَرْكَزُ الزَّهْرَةِ' },
-      { id: 'petal1', path: 'M100,40 C115,55 115,75 100,80 C85,75 85,55 100,40Z', defaultFill: '#FFB7C5' },
-      { id: 'petal2', path: 'M140,70 C130,85 112,88 108,75 C114,62 132,62 140,70Z', defaultFill: '#FF8FA3' },
-      { id: 'petal3', path: 'M145,110 C130,108 118,96 124,85 C136,82 143,96 145,110Z', defaultFill: '#FFB7C5' },
-      { id: 'petal4', path: 'M115,140 C108,127 112,113 122,112 C130,120 126,133 115,140Z', defaultFill: '#FF8FA3' },
-      { id: 'petal5', path: 'M85,140 C74,133 70,120 78,112 C88,113 92,127 85,140Z', defaultFill: '#FFB7C5' },
-      { id: 'petal6', path: 'M55,110 C57,96 64,82 76,85 C82,96 70,108 55,110Z', defaultFill: '#FF8FA3' },
-      { id: 'petal7', path: 'M60,70 C68,62 86,62 92,75 C88,88 70,85 60,70Z', defaultFill: '#FFB7C5' },
-      { id: 'stem', path: 'M97,115 L103,115 L105,200 L95,200Z', defaultFill: '#4CAF50' },
-      { id: 'leaf1', path: 'M97,150 C80,140 65,145 60,160 C75,165 90,155 97,150Z', defaultFill: '#81C784' },
-      { id: 'leaf2', path: 'M103,160 C120,150 135,155 140,170 C125,175 110,165 103,160Z', defaultFill: '#4CAF50' },
+      { id: 'petal1', path: 'M110,100 Q125,78 110,55 Q95,78 110,100 Z', defaultFill: '#FFB7C5' },
+      { id: 'petal2', path: 'M110,100 Q138,102 149,78 Q122,76 110,100 Z', defaultFill: '#FF8FA3' },
+      { id: 'petal3', path: 'M110,100 Q122,124 149,123 Q138,98 110,100 Z', defaultFill: '#FFB7C5' },
+      { id: 'petal4', path: 'M110,100 Q95,123 110,145 Q125,123 110,100 Z', defaultFill: '#FF8FA3' },
+      { id: 'petal5', path: 'M110,100 Q82,98 71,123 Q98,124 110,100 Z', defaultFill: '#FFB7C5' },
+      { id: 'petal6', path: 'M110,100 Q98,76 71,78 Q82,102 110,100 Z', defaultFill: '#FF8FA3' },
+      { id: 'center', path: 'M92,100 A18,18 0 0,1 128,100 A18,18 0 0,1 92,100 Z', defaultFill: '#FFE08A', label: 'مَرْكَزُ الزَّهْرَةِ' },
+      { id: 'stem', path: 'M107,140 L113,140 L115,212 L105,212 Z', defaultFill: '#4CAF50' },
+      { id: 'leaf1', path: 'M107,170 C90,158 72,162 68,177 C84,183 100,173 107,170 Z', defaultFill: '#81C784' },
+      { id: 'leaf2', path: 'M113,182 C130,170 148,174 152,189 C136,195 120,185 113,182 Z', defaultFill: '#4CAF50' },
     ]
   },
   {
@@ -144,12 +146,38 @@ const COLORING_SHAPES: ColoringShape[] = [
   },
 ];
 
+function customToShape(img: CustomColoringImage): ColoringShape {
+  return {
+    id: img.id, nameAr: img.nameAr, emoji: '🖼️', viewBox: img.viewBox,
+    regions: img.regions,
+    svgContent: img.svgContent,
+    regionCount: img.regionCount,
+  };
+}
+
 export default function ColoringActivity() {
   const { currentUser, updateUser } = useStore();
+  const customColoringImages = useStore(s => s.customColoringImages);
   const [selectedShape, setSelectedShape] = useState<ColoringShape | null>(null);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [filledRegions, setFilledRegions] = useState<Record<string, string>>({});
   const [coloredCount, setColoredCount] = useState(0);
+  const selectedColorRef = useRef(COLORS[0]);
+  const filledRegionsRef = useRef<Record<string, string>>({});
+  const coloredCountRef = useRef(0);
+
+  // Keep refs in sync so the inline SVG click handler always reads fresh values
+  selectedColorRef.current = selectedColor;
+  filledRegionsRef.current = filledRegions;
+  coloredCountRef.current = coloredCount;
+
+  const getTotalRegions = (shape: ColoringShape) =>
+    shape.svgContent ? (shape.regionCount || 1) : shape.regions.length;
+
+  const triggerCompletion = (user: typeof currentUser) => {
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+    if (user) updateUser(user.id, { points: user.points + 20 });
+  };
 
   const fillRegion = (regionId: string) => {
     const wasNew = !filledRegions[regionId];
@@ -157,40 +185,83 @@ export default function ColoringActivity() {
     if (wasNew) {
       const newCount = coloredCount + 1;
       setColoredCount(newCount);
-      if (newCount === selectedShape!.regions.length) {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
-        if (currentUser) updateUser(currentUser.id, { points: currentUser.points + 20 });
+      if (selectedShape && newCount >= getTotalRegions(selectedShape)) {
+        triggerCompletion(currentUser);
       }
     }
   };
 
-  const reset = () => { setFilledRegions({}); setColoredCount(0); };
+  // Click handler for inline SVG (event delegation, reads from refs for freshness)
+  const inlineSvgRef = useRef<HTMLDivElement>(null);
+  const handleInlineSvgClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as SVGElement;
+    const regionId = target.getAttribute('data-region-id');
+    if (!regionId) return;
+    const color = selectedColorRef.current;
+    // Directly update DOM fill for instant feedback
+    target.setAttribute('fill', color);
+    const wasNew = !filledRegionsRef.current[regionId];
+    filledRegionsRef.current = { ...filledRegionsRef.current, [regionId]: color };
+    setFilledRegions({ ...filledRegionsRef.current });
+    if (wasNew) {
+      const newCount = coloredCountRef.current + 1;
+      coloredCountRef.current = newCount;
+      setColoredCount(newCount);
+      if (selectedShape && newCount >= getTotalRegions(selectedShape)) {
+        triggerCompletion(currentUser);
+      }
+    }
+  }, [selectedShape, currentUser]);
+
+  const reset = () => {
+    // For inline SVGs, reset DOM fills directly
+    if (inlineSvgRef.current) {
+      inlineSvgRef.current.querySelectorAll('[data-region-id]').forEach(el => {
+        (el as SVGElement).removeAttribute('fill');
+      });
+    }
+    setFilledRegions({});
+    setColoredCount(0);
+    filledRegionsRef.current = {};
+    coloredCountRef.current = 0;
+  };
 
   if (!selectedShape) {
+    const allShapes: ColoringShape[] = [
+      ...COLORING_SHAPES,
+      ...customColoringImages.map(customToShape),
+    ];
     return (
       <div className="space-y-4">
         <h3 className="text-xl font-black text-[#2D3436] dark:text-white text-center">اِخْتَرِ الصُّورَةَ لِلتَّلْوِينِ</h3>
         <div className="grid grid-cols-2 gap-3">
-          {COLORING_SHAPES.map((shape, i) => (
-            <motion.button key={shape.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-              className="bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] hover:border-[#A29BFE] rounded-2xl p-4 text-center cursor-pointer transition-all"
-              onClick={() => { setSelectedShape(shape); reset(); }}
-            >
-              <div className="text-4xl mb-2">{shape.emoji}</div>
-              <p className="font-black text-[#2D3436] dark:text-white text-sm">{shape.nameAr}</p>
-            </motion.button>
-          ))}
+          {allShapes.map((shape, i) => {
+            const isCustom = customColoringImages.some(c => c.id === shape.id);
+            return (
+              <motion.button key={shape.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
+                className="bg-white dark:bg-[#222] border-2 border-[#E5E5E5] dark:border-[#333] hover:border-[#A29BFE] rounded-2xl p-4 text-center cursor-pointer transition-all relative"
+                onClick={() => { setSelectedShape(shape); reset(); }}
+              >
+                {isCustom && (
+                  <span className="absolute top-1 right-1 text-[9px] bg-[#A29BFE] text-white rounded-full px-1.5 py-0.5 font-bold">مُخَصَّصٌ</span>
+                )}
+                <div className="text-4xl mb-2">{shape.emoji}</div>
+                <p className="font-black text-[#2D3436] dark:text-white text-sm">{shape.nameAr}</p>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
     );
   }
 
-  const allColored = coloredCount >= selectedShape.regions.length;
+  const totalRegions = getTotalRegions(selectedShape);
+  const allColored = coloredCount >= totalRegions;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => setSelectedShape(null)} className="dark:text-white flex items-center gap-1">
+        <Button variant="ghost" onClick={() => { setSelectedShape(null); reset(); }} className="dark:text-white flex items-center gap-1">
           <span className="text-lg">←</span> الْعَوْدَةُ
         </Button>
         <p className="font-black dark:text-white">{selectedShape.nameAr} {selectedShape.emoji}</p>
@@ -212,22 +283,34 @@ export default function ColoringActivity() {
           ))}
         </div>
         <p className="text-xs text-center mt-2 text-[#636E72]">
-          مُلَوَّنٌ {coloredCount} / {selectedShape.regions.length}
+          مُلَوَّنٌ {coloredCount} / {totalRegions}
         </p>
       </div>
 
       {/* SVG canvas */}
       <div className="bg-white dark:bg-[#F8F8F8] border-2 border-[#E5E5E5] rounded-3xl overflow-hidden">
-        <svg viewBox={selectedShape.viewBox} className="w-full" style={{ touchAction: 'none' }}>
-          {selectedShape.regions.map(region => (
-            <path key={region.id} d={region.path}
-              fill={filledRegions[region.id] || region.defaultFill}
-              stroke="#4A4A4A" strokeWidth="1.5" strokeLinejoin="round"
-              onClick={() => fillRegion(region.id)}
-              style={{ cursor: 'pointer', transition: 'fill 0.2s' }}
-            />
-          ))}
-        </svg>
+        {selectedShape.svgContent ? (
+          /* Inline SVG for custom uploaded images — preserves group transforms (Potrace etc.) */
+          <div
+            ref={inlineSvgRef}
+            onClick={handleInlineSvgClick}
+            className="w-full"
+            style={{ touchAction: 'none', lineHeight: 0 }}
+            dangerouslySetInnerHTML={{ __html: selectedShape.svgContent }}
+          />
+        ) : (
+          /* Path-based SVG for built-in coloring shapes */
+          <svg viewBox={selectedShape.viewBox} className="w-full" style={{ touchAction: 'none' }}>
+            {selectedShape.regions.map(region => (
+              <path key={region.id} d={region.path}
+                fill={filledRegions[region.id] || region.defaultFill}
+                stroke="#4A4A4A" strokeWidth="1.5" strokeLinejoin="round"
+                onClick={() => fillRegion(region.id)}
+                style={{ cursor: 'pointer', transition: 'fill 0.2s' }}
+              />
+            ))}
+          </svg>
+        )}
       </div>
 
       {allColored && (

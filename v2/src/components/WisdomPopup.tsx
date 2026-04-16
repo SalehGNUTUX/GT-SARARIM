@@ -1,104 +1,63 @@
-// src/components/WisdomPopup.tsx
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Heart } from 'lucide-react';
-import { WisdomCard, getWisdomByTime } from '../data/wisdom';
+import { X, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface WisdomPopupProps {
-    onClose?: () => void;
-}
+const WISDOMS = [
+  { text: 'طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ وَمُسْلِمَةٍ', source: 'حَدِيثٌ شَرِيفٌ' },
+  { text: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', source: 'حَدِيثٌ شَرِيفٌ' },
+  { text: 'اقْرَأْ وَرَبُّكَ الْأَكْرَمُ الَّذِي عَلَّمَ بِالْقَلَمِ', source: 'سُورَةُ الْعَلَقِ' },
+  { text: 'وَقُلْ رَبِّ زِدْنِي عِلْمًا', source: 'سُورَةُ طه' },
+  { text: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ', source: 'حَدِيثٌ شَرِيفٌ' },
+  { text: 'الْعِلْمُ نُورٌ وَالْجَهْلُ ظُلْمَةٌ', source: 'حِكْمَةٌ' },
+];
 
-export const WisdomPopup: React.FC<WisdomPopupProps> = ({ onClose }) => {
-    const [wisdom, setWisdom] = useState<WisdomCard | null>(null);
-    const [isVisible, setIsVisible] = useState(true);
+interface Props { onClose: () => void; }
 
-    useEffect(() => {
-        // جلب حكمة جديدة
-        const newWisdom = getWisdomByTime();
-        setWisdom(newWisdom);
+export function WisdomPopup({ onClose }: Props) {
+  const [wisdom] = useState(() => WISDOMS[Math.floor(Math.random() * WISDOMS.length)]);
 
-        // تخزين وقت آخر ظهور في localStorage
-        const lastSeen = localStorage.getItem('lastWisdomSeen');
-        const today = new Date().toDateString();
+  useEffect(() => {
+    const key = `wisdom_${new Date().toDateString()}`;
+    localStorage.setItem(key, '1');
+  }, []);
 
-        if (lastSeen !== today) {
-            localStorage.setItem('lastWisdomSeen', today);
-            setIsVisible(true);
-        } else {
-            // إذا شوهد اليوم، لا نظهر النافذة
-            setIsVisible(false);
-            onClose?.();
-        }
-    }, []);
-
-    const getTypeIcon = () => {
-        switch (wisdom?.type) {
-            case 'hadith': return '📖';
-            case 'dhikr': return '🕌';
-            case 'ayah': return '📜';
-            default: return '💡';
-        }
-    };
-
-    const getTypeName = () => {
-        switch (wisdom?.type) {
-            case 'hadith': return 'حديث نبوي شريف';
-            case 'dhikr': return 'ذكر';
-            case 'ayah': return 'آية قرآنية';
-            default: return 'حكمة';
-        }
-    };
-
-    if (!isVisible || !wisdom) return null;
-
-    return (
-        <AnimatePresence>
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        onClick={e => e.target === e.currentTarget && onClose()}
+      >
         <motion.div
-        initial={{ opacity: 0, y: -50, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -50, scale: 0.9 }}
-        className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-md"
+          initial={{ scale: 0.7, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.7, y: 50 }}
+          className="bg-gradient-to-br from-[#FF9F43] to-[#FF6B6B] rounded-3xl p-6 max-w-sm w-full shadow-2xl relative text-white"
         >
-        <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-2xl overflow-hidden">
-        <div className="p-4 text-white">
-        <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-2">
-        <Sparkles className="w-5 h-5 animate-pulse" />
-        <span className="text-xs font-bold opacity-80">بطاقة اليوم</span>
-        </div>
-        <button onClick={() => { setIsVisible(false); onClose?.(); }} className="hover:bg-white/20 rounded-full p-1 transition">
-        <X className="w-4 h-4" />
-        </button>
-        </div>
-
-        <div className="text-center space-y-3">
-        <div className="text-4xl">{getTypeIcon()}</div>
-        <div className="text-2xl font-bold leading-relaxed">
-        {wisdom.textWithHarakat.split(' ').map((word, i) => (
-            <span key={i} className="inline-block mx-1">
-            {word}
-            {word.match(/[ء-ي]/) && <span className="text-xs opacity-70 block -mt-1">◌</span>}
-            </span>
-        ))}
-        </div>
-        {wisdom.source && (
-            <p className="text-xs opacity-70">📚 {wisdom.source}</p>
-        )}
-        <div className="pt-2">
-        <span className="bg-white/20 px-3 py-1 rounded-full text-xs">
-        {getTypeName()}
-        </span>
-        </div>
-        </div>
-        </div>
-
-        <div className="bg-black/20 p-3 text-center text-xs text-white/80 flex items-center justify-center gap-2">
-        <Heart className="w-3 h-3" />
-        <span>احرص على قراءتها كل يوم</span>
-        </div>
-        </div>
+          <button onClick={onClose} className="absolute top-4 left-4 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+          <div className="text-center space-y-4 pt-2">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl mx-auto flex items-center justify-center">
+              <BookOpen className="w-8 h-8" />
+            </div>
+            <div>
+              <p className="text-sm font-bold opacity-80 mb-2">حِكْمَةُ الْيَوْمِ</p>
+              <p className="text-xl font-black leading-relaxed">{wisdom.text}</p>
+              <p className="text-sm opacity-75 mt-2">— {wisdom.source}</p>
+            </div>
+            <Button
+              className="w-full bg-white text-[#FF6B6B] font-black rounded-2xl py-5 hover:bg-white/90"
+              onClick={onClose}
+            >
+              ابْدَأْ يَوْمَكَ بِسْمِ اللَّهِ 🌟
+            </Button>
+          </div>
         </motion.div>
-        </AnimatePresence>
-    );
-};
+      </motion.div>
+    </AnimatePresence>
+  );
+}

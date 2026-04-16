@@ -2,7 +2,12 @@
 @import "tw-animate-css";
 @import "@fontsource-variable/geist";
 
-/* ─── خط Ubuntu Arabic ─── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* استيراد خط Ubuntu Arabic - نسخة عادية فقط */
 @font-face {
   font-family: 'Ubuntu Arabic';
   src: url('/fonts/Ubuntu Arabic Regular.otf') format('opentype');
@@ -10,6 +15,8 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* استخدام نفس الملف للخط العريض كحل مؤقت حتى توفر الملف الحقيقي */
 @font-face {
   font-family: 'Ubuntu Arabic';
   src: url('/fonts/Ubuntu Arabic Regular.otf') format('opentype');
@@ -18,48 +25,53 @@
   font-display: swap;
 }
 
-/* ─── خط Noto Arabic (مدمج في المشروع) ─── */
-@font-face {
-  font-family: 'Noto Naskh Arabic';
-  src: url('/fonts/NotoSansArabic-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @custom-variant dark (&:is(.dark *));
 
+
 @theme inline {
-  --font-sans: 'Ubuntu Arabic', 'Geist Variable', sans-serif;
   --font-heading: var(--font-sans);
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
+  --font-sans: 'Ubuntu Arabic', 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
-
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -78,6 +90,20 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
@@ -99,54 +125,93 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--app-font-override, var(--font-sans));
-  direction: rtl;
-  text-align: right;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Ubuntu Arabic', 'Geist Variable', sans-serif;
+  }
+  html {
+    @apply font-sans;
+  }
 }
 
-/* ─── Dynamic Font Override ─── */
-:root { --app-font-override: ; }
+/* ═══════════════════════════════════════════════
+   إصلاح تجربة المستخدم على الهاتف والحاسوب
+═══════════════════════════════════════════════ */
 
-/* Arabic text with full harakat */
-.font-arabic {
-  font-family: var(--app-font-override, 'Ubuntu Arabic', 'Noto Naskh Arabic', serif) !important;
-  line-height: 2.2;
-}
-
-/* No scrollbar */
+/* إخفاء شريط التمرير مع الإبقاء على الوظيفة */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ─── Arabic input field support ─── */
-input, textarea, select {
-  font-family: var(--app-font-override, 'Ubuntu Arabic', 'Noto Naskh Arabic', sans-serif);
+/* تأكيد RTL على جميع حقول الإدخال */
+input[type="text"], input[type="password"], textarea {
+  direction: rtl;
+  text-align: right;
 }
 
-/* Ensure RTL text direction is detected automatically */
-input[dir="auto"], textarea[dir="auto"] {
-  unicode-bidi: plaintext;
-}
-
-
-/* ─── Responsive ─── */
+/* إصلاح nav السفلي على الهاتف - يجب أن يبقى ضمن الـ max-width */
 @media (max-width: 640px) {
-  /* Tighter spacing on mobile */
-  .card { border-radius: 16px; }
-  .dialog-content { border-radius: 20px; }
+  /* ضمان أن الهيدر لا يخرج عن الشاشة */
+  header {
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  /* زيادة حجم أزرار التنقل على الهاتف لسهولة النقر */
+  nav button {
+    min-width: 60px;
+  }
+
+  /* تصغير حجم الخط في حقول الإدخال على الهاتف */
+  input, textarea {
+    font-size: 16px !important; /* يمنع التكبير التلقائي على iOS */
+  }
 }
 
-/* Ensure content is never wider than viewport */
-* { max-width: 100vw; box-sizing: border-box; }
-img { max-width: 100%; height: auto; }
+/* الحاسوب: عرض مريح بمحاذاة مشابهة للتابلت */
+@media (min-width: 768px) {
+  /* نفس max-width للـ nav كما هو للمحتوى */
+  nav.fixed {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 680px !important;
+  }
 
-/* Fix overflow on mobile */
-body { overflow-x: hidden; }
+  /* المحتوى الرئيسي: هامش جانبي للراحة */
+  main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ضمان أن الـ WisdomPopup تظهر داخل نطاق التطبيق */
+.wisdom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  padding: 1rem;
+}
