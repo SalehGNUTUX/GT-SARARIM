@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GT-SARARIM — سارة ريم | التطبيق التعليمي الممتع للطفل المسلم</title>
-  <meta name="description" content="تطبيق تعليمي ترفيهي مجاني مفتوح المصدر للأطفال المسلمين. قصص وألغاز وأنشطة تفاعلية تعمل بدون إنترنت. يدعم لينكس، أندرويد، والويب. تحكم كامل للوالدين.">
-  <meta property="og:title" content="GT-SARARIM - عالم المعرفة والمرح">
-  <meta property="og:description" content="تطبيق تعليمي ممتع وآمن للأطفال، يعمل بدون إنترنت">
+  <title>GT-SARARIM — سارة ريم | الإصدار 2.1 – تجربة تعلم ممتعة بدون إنترنت</title>
+  <meta name="description" content="تطبيق تعليمي ترفيهي مجاني مفتوح المصدر للأطفال المسلمين. قصص وألغاز وأنشطة تفاعلية تعمل بدون إنترنت. الإصدار 2.1 يضيف مستوى خبير، ألغازاً بصور ضبابية، وقصصاً جديدة.">
+  <meta property="og:title" content="GT-SARARIM v2.1 - عالم المعرفة والمرح">
+  <meta property="og:description" content="تطبيق تعليمي ممتع وآمن للأطفال، يعمل بدون إنترنت، مع محتوى جديد للمستوى الخبير.">
   <meta property="og:image" content="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png">
   <meta property="og:url" content="https://salehgnutux.github.io/GT-SARARIM/">
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png">
@@ -101,12 +101,10 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       will-change: transform;
     }
-    /* السحب في الوضع الداكن */
     body.dark .cloud {
       background: rgba(180, 190, 230, 0.25);
       box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     }
-    /* نبدأ السحب من خارج الشاشة يميناً (لأن الاتجاه rtl، نبدأ من اليمين) */
     @keyframes floatCloudRightToLeft {
       0% { transform: translateX(100vw); opacity: 0; }
       10% { opacity: 0.7; }
@@ -176,6 +174,15 @@
       background-clip: text;
       color: transparent;
     }
+    .version-badge {
+      background: var(--accent-green);
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
     .tagline { font-size: 1.8rem; font-weight: bold; color: var(--accent-orange); margin-top: 0.5rem; }
     .sub { font-size: 1.1rem; color: var(--text-muted-day); }
 
@@ -201,6 +208,7 @@
     .btn-web { background: #6c5ce7; color: white; box-shadow: 0 6px 14px rgba(108,92,231,0.3); }
     .btn-linux { background: var(--accent-orange); color: white; }
     .btn-android { background: var(--accent-green); color: white; }
+    .btn-deb { background: #2c3e50; color: white; }
     .btn-github { background: #2c3e50; color: white; }
     .btn:hover { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
 
@@ -223,6 +231,18 @@
     }
     .stat-number { font-size: 2.5rem; font-weight: 900; color: var(--accent-red); }
     .stat-label { font-size: 0.9rem; }
+
+    /* مستجدات الإصدار */
+    .whatsnew {
+      background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,159,67,0.15));
+      border-radius: 48px;
+      padding: 1.5rem;
+      margin: 1rem 0 2rem;
+      text-align: center;
+    }
+    .whatsnew h3 { font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--accent-orange); }
+    .whatsnew ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 0.8rem; }
+    .whatsnew li { background: var(--card-bg-day); padding: 5px 12px; border-radius: 30px; font-size: 0.9rem; }
 
     /* شبكة البطاقات (الميزات) */
     .cards-grid {
@@ -328,7 +348,7 @@
     <div class="header">
       <div class="logo">
         <img class="logo-img" src="https://raw.githubusercontent.com/SalehGNUTUX/GT-SARARIM/main/GT-SARARIM-ICON.png" alt="شعار">
-        <h1>GT-SARARIM</h1>
+        <h1>GT-SARARIM <span class="version-badge">v2.1</span></h1>
       </div>
       <div class="tagline">🌟 سارة ريم — عالم المعرفة والمرح 🌟</div>
       <div class="sub">تطبيق تعليمي تفاعلي للطفل العربي المسلم • يعمل بدون إنترنت • حر ومجاني</div>
@@ -336,27 +356,41 @@
 
     <div class="btn-group">
       <a href="https://salehgnutux.github.io/GT-SARARIM/web/" class="btn btn-web">🌐 تشغيل مباشر (الويب)</a>
-      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-2.0.0.AppImage" class="btn btn-linux">🐧 تحميل لينكس (AppImage)</a>
-      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-v2.apk" class="btn btn-android">📱 تحميل أندرويد (APK)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/GT-SARARIM-2.1.0.AppImage" class="btn btn-linux">🐧 لينكس (AppImage)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/gt-sararim_2.1.0_amd64.deb" class="btn btn-deb">📦 لينكس (deb)</a>
+      <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/GT-SARARIM-v2.1.apk" class="btn btn-android">📱 أندرويد (APK)</a>
       <a href="https://github.com/SalehGNUTUX/GT-SARARIM" class="btn btn-github">🐙 GitHub (مصدر مفتوح)</a>
     </div>
 
     <div class="stats">
-      <div class="stat-card"><div class="stat-number">8+</div><div class="stat-label">قصة تعليمية</div></div>
+      <div class="stat-card"><div class="stat-number">12+</div><div class="stat-label">قصة تعليمية</div></div>
       <div class="stat-card"><div class="stat-number">4</div><div class="stat-label">أنشطة تفاعلية</div></div>
-      <div class="stat-card"><div class="stat-number">20+</div><div class="stat-label">سؤال ولغز</div></div>
+      <div class="stat-card"><div class="stat-number">28+</div><div class="stat-label">سؤال ولغز</div></div>
       <div class="stat-card"><div class="stat-number">4-12</div><div class="stat-label">الفئة العمرية</div></div>
       <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">بدون إنترنت</div></div>
     </div>
 
+    <!-- مستجدات الإصدار 2.1 -->
+    <div class="whatsnew">
+      <h3>🎉 ما الجديد في الإصدار 2.1؟</h3>
+      <ul>
+        <li>✨ مستوى خبير (Expert) بألغاز متقدمة</li>
+        <li>📸 ألغاز بصور ضبابية تنكشف عند الإجابة</li>
+        <li>📖 5 قصص جديدة (العصر الذهبي، الاجتهاد، فيزياء الكون، ابن الهيثم، البيروني)</li>
+        <li>🧩 8 ألغاز جديدة + 8 أسئلة للمستوى الخبير</li>
+        <li>🛠️ تحسين تجربة الألغاز (خيارات متعددة، صور ضبابية)</li>
+        <li>📱 تحسين تجاوب الشاشة على الهواتف والحواسب</li>
+      </ul>
+    </div>
+
     <!-- بطاقات الميزات (قابلة للنقر لتوسيع الشرح) -->
     <div class="cards-grid" id="featuresGrid">
-      <div class="feature-card" data-desc="📖 نصوص القصص كاملة بالحركات (تشكيل) لتعليم القراءة الصحيحة. يمكنك إضافة صور لكل قصة عبر لوحة التحكم.">
+      <div class="feature-card" data-desc="📖 نصوص القصص كاملة بالحركات (تشكيل) لتعليم القراءة الصحيحة. يمكنك إضافة صور لكل قصة عبر لوحة التحكم. القصص الجديدة تشمل: العصر الذهبي، الاجتهاد، فيزياء الكون، ابن الهيثم، البيروني.">
         <div class="card-icon">📖</div><h3>قصص مشكّلة</h3>
         <div class="short-desc">نصوص كاملة بالحركات + صور مخصصة</div>
         <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
       </div>
-      <div class="feature-card" data-desc="أضف صورة لكل سؤال أو لكل لغز — تظهر أثناء الاختبار. الصور تجعل التعلم أكثر تشويقاً للأطفال.">
+      <div class="feature-card" data-desc="أضف صورة لكل سؤال أو لكل لغز — تظهر أثناء الاختبار. الصور تجعل التعلم أكثر تشويقاً للأطفال. في الإصدار الجديد، الألغاز تدعم صوراً ضبابية تنكشف تدريجياً عند الإجابة الصحيحة.">
         <div class="card-icon">🖼️</div><h3>صور للأسئلة والألغاز</h3>
         <div class="short-desc">إرفاق صور مخصصة لكل سؤال ولغز</div>
         <div class="full-desc"></div><div class="expand-hint">👆 اضغط للمزيد</div>
@@ -417,12 +451,14 @@
       <h2>📥 تحميل التطبيق الآن</h2>
       <p>حر ومجاني • يعمل بدون إنترنت • يمكن للوالدين إضافة محتوى خاص بهم</p>
       <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin:1rem 0">
-        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-2.0.0.AppImage" class="btn btn-linux">🐧 لينكس (AppImage)</a>
-        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2/GT-SARARIM-v2.apk" class="btn btn-android">📱 أندرويد (APK)</a>
+        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/GT-SARARIM-2.1.0.AppImage" class="btn btn-linux">🐧 لينكس (AppImage)</a>
+        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/gt-sararim_2.1.0_amd64.deb" class="btn btn-deb">📦 لينكس (deb)</a>
+        <a href="https://github.com/SalehGNUTUX/GT-SARARIM/releases/download/GT-SARARIM-v2.1/GT-SARARIM-v2.1.apk" class="btn btn-android">📱 أندرويد (APK)</a>
       </div>
       <div class="checksum">
-        <strong>AppImage SHA256:</strong> cb313bc81e7d62a374a94904b818c724e3f59f21ced0e77ce053f0f9f7d2855e<br>
-        <strong>APK SHA256:</strong> b1a276aa2dfb6fe24a60feeca2747c97dc87ce09e5fa18cbaac322ae96e6f681
+        <strong>AppImage SHA256:</strong> 825fc3affe4fcbbf09fb8c0383c25681a857b060721243170734e7c5d2c34986<br>
+        <strong>DEB SHA256:</strong> 956535223212642973c113d7069e1125c66726894c8e7c625b5b5cff0b7f489d<br>
+        <strong>APK SHA256:</strong> b38c759ffbf21042513848299da2bdca7293afbd58c5c0fe8a22db102ba31d29
       </div>
       <div style="margin-top:1rem; background:rgba(0,0,0,0.1); display:inline-block; padding:8px 20px; border-radius:40px;">
         🛡️ <strong>لدخول لوحة الوالدين:</strong> كلمة المرور الافتراضية <code>admin</code> (يمكنك تغييرها بعد الدخول)
@@ -432,7 +468,7 @@
 
     <div class="footer">
       <p>البرنامج <strong>حر ومجاني</strong> برخصة GNU GPL-3.0 — صُنع بـ ❤️ للطفل العربي المسلم</p>
-      <p>المطور: <a href="https://github.com/SalehGNUTUX" target="_blank">SalehGNUTUX</a> • <a href="https://github.com/SalehGNUTUX/GT-SARARIM" target="_blank">GitHub</a></p>
+      <p>المطور: <a href="https://github.com/SalehGNUTUX" target="_blank">SalehGNUTUX</a> • <a href="https://github.com/SalehGNUTUX/GT-SARARIM" target="_blank">GitHub</a> • الإصدار 2.1.0</p>
     </div>
   </div>
 
@@ -444,27 +480,21 @@
       const moonDiv = document.createElement('div'); moonDiv.className = 'moon'; sky.appendChild(moonDiv);
     }
     function createClouds() {
-      // نضيف 8 سحب بأحجام ومواضع مختلفة
       for (let i = 0; i < 8; i++) {
         const cloud = document.createElement('div');
         cloud.className = 'cloud';
-        // عرض عشوائي بين 120 و 220 بكسل، ارتفاع بين 50 و 90
         const width = 120 + Math.random() * 100;
         const height = 50 + Math.random() * 40;
         cloud.style.width = width + 'px';
         cloud.style.height = height + 'px';
-        // موضع رأسي عشوائي (10% إلى 70%)
         cloud.style.top = Math.random() * 60 + 10 + '%';
-        // سرعة مختلفة لكل سحابة (مدة الحركة بين 25 و 40 ثانية)
         const duration = 25 + Math.random() * 20;
         cloud.style.animation = `floatCloudRightToLeft ${duration}s linear infinite`;
-        // تأخير عشوائي
         cloud.style.animationDelay = Math.random() * -duration + 's';
         sky.appendChild(cloud);
       }
     }
     function createBirds() {
-      // نضيف 4 طيور فقط في الوضع الفاتح (سيتم التحكم بظهورها عبر CSS)
       for (let i = 0; i < 4; i++) {
         const bird = document.createElement('div');
         bird.className = 'bird';
@@ -496,7 +526,7 @@
     createBirds();
     createStars();
 
-    // 2. Dark/Light mode مع حفظ التفضيل وتحسين ظهور النص admin
+    // 2. Dark/Light mode مع حفظ التفضيل
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     let currentTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
