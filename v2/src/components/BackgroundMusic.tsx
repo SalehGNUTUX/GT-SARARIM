@@ -21,8 +21,20 @@ function startGlobalSound(soundId: string, vol: number, sounds: any[]) {
   const v = Math.max(0, Math.min(1, vol / 100));
 
   if (sound.audioUrl) {
-    // ملف OGG مدمج
-    _audioEl = new Audio(sound.audioUrl);
+    // ملف OGG مدمج — تحويل المسار إلى مطلق لضمان التوافق مع Electron AppImage
+    let resolvedUrl = sound.audioUrl;
+    try {
+      if (resolvedUrl && !resolvedUrl.startsWith('data:') && !resolvedUrl.startsWith('blob:') && !resolvedUrl.startsWith('file:') && !resolvedUrl.startsWith('http')) {
+        if (resolvedUrl.startsWith('/')) {
+          // مسار مطلق من جذر الويب — في Electron AppImage يجب بناؤه نسبة لمجلد dist
+          const baseDir = document.baseURI.substring(0, document.baseURI.lastIndexOf('/') + 1);
+          resolvedUrl = baseDir + resolvedUrl.slice(1);
+        } else {
+          resolvedUrl = new URL(resolvedUrl, document.baseURI).href;
+        }
+      }
+    } catch { /* استخدام المسار الأصلي عند الفشل */ }
+    _audioEl = new Audio(resolvedUrl);
   } else if (sound.audioData) {
     // ملف صوتي مرفوع من المستخدم (base64)
     _audioEl = new Audio(sound.audioData);

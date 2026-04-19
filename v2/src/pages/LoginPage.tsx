@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, ShieldCheck, UserPlus, LogIn, Lock, KeyRound, Sparkles, Moon, Sun, RefreshCw, ArrowRight, HelpCircle } from 'lucide-react';
+import { User, ShieldCheck, UserPlus, LogIn, Lock, KeyRound, Sparkles, Moon, Sun, RefreshCw, ArrowRight, HelpCircle, Share2, X as XIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import appIcon from '../../public/GT-SARARIM-ICON.png';
 
-export default function LoginPage() {
+export default function LoginPage({ onShare, onClose }: { onShare?: () => void; onClose?: () => void }) {
   const { users, setCurrentUser, addUser, updateUser, updateSettings, settings, theme, toggleTheme, localImages } = useStore();
 
   const getAvatar = (user: any) => {
@@ -210,9 +210,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FDFCF0] to-[#F5F5E8] dark:from-[#1A1A1A] dark:to-[#0D0D0D] flex flex-col items-center justify-center p-6 text-right transition-colors" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-[#FDFCF0] to-[#F5F5E8] dark:from-[#1A1A1A] dark:to-[#0D0D0D] flex flex-col items-center justify-center p-6 pb-24 text-right transition-colors" dir="rtl">
 
-      {/* زر تغيير الوضع */}
+      {/* زر تغيير الوضع — يسار */}
       <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         onClick={toggleTheme}
         className="fixed top-4 left-4 z-50 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full p-2.5 shadow-lg border border-[#E5E5E5] dark:border-[#333] hover:scale-110 transition-transform">
@@ -220,6 +220,16 @@ export default function LoginPage() {
           ? <Moon className="w-5 h-5 text-[#4A4A4A]"/>
           : <Sun className="w-5 h-5 text-yellow-400"/>}
       </motion.button>
+
+      {/* زر الإغلاق — يمين */}
+      {onClose && (
+        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          onClick={onClose}
+          className="fixed top-4 right-4 z-50 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full p-2.5 shadow-lg border border-[#E5E5E5] dark:border-[#333] hover:scale-110 transition-transform"
+          title="إِغْلَاقُ التَّطْبِيقِ">
+          <XIcon className="w-5 h-5 text-[#FF6B6B]"/>
+        </motion.button>
+      )}
 
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }} className="w-full max-w-md space-y-8">
@@ -313,8 +323,18 @@ export default function LoginPage() {
           </Card>
         </motion.div>
 
+        {/* زر المشاركة */}
+        {onShare && (
+          <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+            onClick={onShare}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[#4CAF50]/10 dark:bg-[#4CAF50]/15 hover:bg-[#4CAF50]/20 border border-[#4CAF50]/30 text-[#2E7D32] dark:text-[#81C784] text-sm font-bold rounded-2xl transition-all">
+            <Share2 className="w-4 h-4"/>
+            شَارِكِ التَّطْبِيقَ مَعَ الْأَصْدِقَاءِ
+          </motion.button>
+        )}
+
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-center text-xs text-[#B2BEC3] dark:text-[#555]">
-          الْبَرْنَامَجُ حُرٌّ مَفْتُوحُ الْمَصْدَرِ — رُخْصَةُ غَنُو الْعُمُومِيَّةِ 3
+          الْبَرْنَامَجُ حُرٌّ وَمَفْتُوحُ الْمَصْدَرِ — رُخْصَةُ غَنُو الْعُمُومِيَّةِ 3
         </motion.p>
       </motion.div>
 

@@ -1,8 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import appIcon from '../public/GT-SARARIM-ICON.png';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Gamepad2, Brain, Settings, User, Home as HomeIcon, Lock, Trophy, Moon, Sun, Github, Sparkles, ShieldCheck } from 'lucide-react';
+import { BookOpen, Gamepad2, Brain, Settings, User, Home as HomeIcon, Lock, Trophy, Moon, Sun, Github, Sparkles, ShieldCheck, Share2, X as XIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+
+const APP_URL = 'https://salehgnutux.github.io/GT-SARARIM/';
+
+async function closeApp() {
+  try {
+    const { Capacitor } = await import('@capacitor/core');
+    if (Capacitor.isNativePlatform()) {
+      const { App: CapApp } = await import('@capacitor/app');
+      CapApp.exitApp();
+      return;
+    }
+  } catch { /* ignore */ }
+  window.close();
+}
+
+const APP_SHARE_TEXT = '🌟 جَرِّبْ تَطْبِيقَ GT-SARARIM التَّعْلِيمِيَّ لِأَطْفَالِكَ! قِصَصٌ إِسْلَامِيَّةٌ وَأَلْغَازٌ وَأَسْئِلَةٌ تَفَاعُلِيَّةٌ. حُرٌّ وَمَفْتُوحُ الْمَصْدَرِ وَبِدُونِ إِنْتَرْنَتَ 📱';
+
+async function shareApp() {
+  const shareText = `${APP_SHARE_TEXT}\n${APP_URL}`;
+  try {
+    const { Capacitor } = await import('@capacitor/core');
+    if (Capacitor.isNativePlatform()) {
+      const { Share } = await import('@capacitor/share');
+      await Share.share({ title: 'GT-SARARIM', text: shareText, dialogTitle: 'مشاركة التطبيق' });
+      return;
+    }
+  } catch (e: any) { if (e?.name === 'AbortError') return; }
+  if (navigator.share) {
+    try { await navigator.share({ title: 'GT-SARARIM', text: shareText }); return; }
+    catch (e: any) { if (e?.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(shareText); } catch { window.open(APP_URL, '_blank'); }
+}
 
 // ── شاشة انتهاء الوقت ──
 function TimeUpScreen({ onLogout, onParentUnlock, theme }: { onLogout: () => void; onParentUnlock: (pwd: string) => void; theme: string }) {
@@ -39,6 +72,9 @@ function TimeUpScreen({ onLogout, onParentUnlock, theme }: { onLogout: () => voi
           <Button className="w-full py-6 bg-[#4CAF50] rounded-2xl font-bold text-lg" onClick={onLogout}>تَسْجِيلُ الْخُرُوجِ</Button>
           <Button variant="outline" className="w-full py-4 rounded-2xl flex items-center gap-2 justify-center dark:border-[#444] dark:text-white" onClick={() => setShowUnlock(true)}>
             <ShieldCheck className="w-4 h-4 text-[#FF6B6B]"/> رَفْعُ الْحَظْرِ (الْوَالِدَيْنِ)
+          </Button>
+          <Button variant="outline" className="w-full py-3 rounded-2xl flex items-center gap-2 justify-center dark:border-[#444] dark:text-white text-sm" onClick={shareApp}>
+            <Share2 className="w-4 h-4 text-[#4CAF50]"/> شَارِكْ هَذَا التَّطْبِيقَ مَعَ الْأَصْدِقَاءِ
           </Button>
         </div>
       )}
@@ -99,6 +135,7 @@ export default function App() {
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [showWisdom, setShowWisdom] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // ── اكتشاف وضع النظام — يُشغَّل عند كل وصول ما لم يختر المستخدم يدوياً ──
   // setTheme لا تُغيّر themeIsDefault → الكشف التلقائي يبقى فعّالاً عبر فتحات التطبيق
@@ -149,6 +186,8 @@ export default function App() {
       document.documentElement.style.removeProperty('--app-font-override');
     } else if (family === 'noto-arabic') {
       document.documentElement.style.setProperty('--app-font-override', "'Noto Naskh Arabic', serif");
+    } else if (family === 'noto-sans-arabic') {
+      document.documentElement.style.setProperty('--app-font-override', "'Noto Sans Arabic', sans-serif");
     } else {
       // Custom font — inject its face if not already done
       const cf = customFonts.find(f => f.id === family);
@@ -197,7 +236,60 @@ export default function App() {
     }
   }, [currentUser]);
 
-  if (!currentUser) return <><BackgroundMusic /><LoginPage /></>;
+  // زر الرجوع على أندرويد — listener واحد فقط مع ref لتجنب نافذة العمى عند إعادة التسجيل
+  const activeTabRef = useRef(activeTab);
+  useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); }, [activeTab]);
+
+  useEffect(() => {
+    let unsub: (() => void) | null = null;
+    (async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (!Capacitor.isNativePlatform()) return;
+        const { App: CapApp } = await import('@capacitor/app');
+        const handle = await CapApp.addListener('backButton', () => {
+          if (activeTabRef.current !== 'home') {
+            setActiveTab('home');
+            return;
+          }
+          setShowExitConfirm(true);
+        });
+        unsub = () => handle.remove();
+      } catch { /* ignore */ }
+    })();
+    return () => { unsub?.(); };
+  }, []); // listener واحد طوال دورة حياة التطبيق
+
+  if (!currentUser) return (
+    <>
+      <BackgroundMusic />
+      <LoginPage onShare={shareApp} onClose={() => setShowExitConfirm(true)} />
+      <AnimatePresence>
+        {showExitConfirm && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 p-6" dir="rtl">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-[#222] rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 text-center">
+              <div className="text-4xl">👋</div>
+              <h3 className="text-lg font-black dark:text-white">هَلْ تُرِيدُ الْخُرُوجَ؟</h3>
+              <p className="text-sm text-[#636E72] dark:text-[#A0A0A0]">سَيُغْلَقُ التَّطْبِيقُ</p>
+              <div className="flex gap-3 pt-1">
+                <button onClick={() => setShowExitConfirm(false)}
+                  className="flex-1 py-3 rounded-2xl border-2 border-[#E5E5E5] dark:border-[#444] font-bold dark:text-white">
+                  إِلْغَاءٌ
+                </button>
+                <button onClick={() => { setShowExitConfirm(false); closeApp(); }}
+                  className="flex-1 py-3 rounded-2xl bg-[#FF6B6B] text-white font-bold">
+                  خُرُوجٌ
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 
   if (isTimeUp && currentUser.role !== 'parent') {
     const handleParentUnlock = (pwd: string) => {
@@ -269,13 +361,19 @@ export default function App() {
               <h1 className="font-bold text-lg tracking-tight text-[#2D3436] dark:text-white cursor-pointer leading-tight" onClick={() => setActiveTab('home')}>SARARIM</h1>
               <p className="text-[9px] text-[#636E72] dark:text-[#A0A0A0]">سارة ريم — عالم المعرفة والمرح</p>
             </div>
-            <h1 className="sm:hidden font-bold text-base tracking-tight text-[#2D3436] dark:text-white cursor-pointer" onClick={() => setActiveTab('home')}>SARARIM</h1>
+            <div className="sm:hidden flex flex-col leading-none cursor-pointer" onClick={() => setActiveTab('home')}>
+              <span className="font-bold text-[10px] tracking-tight text-[#2D3436] dark:text-white">SARA</span>
+              <span className="font-bold text-[10px] tracking-tight text-[#2D3436] dark:text-white">RIM</span>
+            </div>
           </div>
 
           {/* ── يمين: أدوات التحكم ── */}
           <div className="flex items-center gap-1 shrink-0">
             <FontSelector />
             <SoundControls />
+            <Button variant="ghost" size="icon" onClick={shareApp} className="rounded-full w-8 h-8" title="مشاركة التطبيق">
+              <Share2 className="w-4 h-4 text-[#4CAF50]"/>
+            </Button>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8">
               {theme==='light' ? <Moon className="w-4 h-4"/> : <Sun className="w-4 h-4 text-yellow-400"/>}
             </Button>
@@ -284,6 +382,9 @@ export default function App() {
                 <Settings className="w-4 h-4"/>
               </Button>
             )}
+            <Button variant="ghost" size="icon" onClick={() => setShowExitConfirm(true)} className="rounded-full w-8 h-8" title="إغلاق التطبيق">
+              <XIcon className="w-4 h-4 text-[#FF6B6B]"/>
+            </Button>
             <button
               onClick={() => setActiveTab('profile')}
               className="flex items-center gap-1.5 px-2 py-1 bg-[#E8F5E9] dark:bg-[#1B5E20] text-[#2E7D32] dark:text-[#A5D6A7] rounded-full text-sm font-bold">
@@ -337,11 +438,36 @@ export default function App() {
         </div>
       </nav>
 
+      {/* حوار تأكيد الخروج */}
+      <AnimatePresence>
+        {showExitConfirm && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 p-6" dir="rtl">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-[#222] rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 text-center">
+              <div className="text-4xl">👋</div>
+              <h3 className="text-lg font-black dark:text-white">هَلْ تُرِيدُ الْخُرُوجَ؟</h3>
+              <p className="text-sm text-[#636E72] dark:text-[#A0A0A0]">سَيُغْلَقُ التَّطْبِيقُ</p>
+              <div className="flex gap-3 pt-1">
+                <button onClick={() => setShowExitConfirm(false)}
+                  className="flex-1 py-3 rounded-2xl border-2 border-[#E5E5E5] dark:border-[#444] font-bold dark:text-white">
+                  إِلْغَاءٌ
+                </button>
+                <button onClick={() => { setShowExitConfirm(false); setCurrentUser(null); closeApp(); }}
+                  className="flex-1 py-3 rounded-2xl bg-[#FF6B6B] text-white font-bold">
+                  خُرُوجٌ
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <footer className="max-w-2xl mx-auto px-4 py-8 text-center space-y-3 opacity-50 pb-32">
         <p className="text-xs">الْبَرْنَامَجُ حُرٌّ مَفْتُوحُ الْمَصْدَرِ — رُخْصَةُ غَنُو الْعُمُومِيَّةِ 3</p>
         <div className="flex items-center justify-center gap-4">
           <a href="https://github.com/SalehGNUTUX" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs hover:text-[#FF6B6B]"><Github className="w-3 h-3"/><span>GNUTUX</span></a>
-          <span className="text-xs">•</span><span className="text-xs">v2.1.0</span>
+          <span className="text-xs">•</span><span className="text-xs">v2.3.0</span>
         </div>
       </footer>
 

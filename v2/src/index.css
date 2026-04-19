@@ -25,6 +25,22 @@ html, body {
   font-display: swap;
 }
 
+/* خط Noto Sans Arabic */
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('/fonts/NotoSansArabic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('/fonts/NotoSansArabic-Regular.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 

@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Gamepad2, Brain, Palette, Image as ImageIcon, ChevronRight } from 'lucide-react';
+import { Gamepad2, Brain, Palette, Image as ImageIcon, ChevronRight, Grid3x3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import DotToDotActivity from '../components/DotToDotActivity';
 import ColoringActivity from '../components/ColoringActivity';
 import ImageQuizActivity from '../components/ImageQuizActivity';
+import MemoryGameActivity from '../components/MemoryGameActivity';
 
 // Quiz (existing activity)
 import QuizActivity from './QuizActivity';
 
 const ACTIVITY_TYPES = [
   { id: 'quiz',     nameAr: 'مُسَابَقَةُ الْمَعْلُومَاتِ', icon: Brain,     color: '#FF6B6B', bg: '#FFEBEE', desc: 'أَجِبْ عَلَى الْأَسْئِلَةِ وَاكْسِبِ النُّقَاطَ' },
+  { id: 'memory',   nameAr: 'لُعْبَةُ الذَّاكِرَةِ',        icon: Grid3x3,   color: '#A29BFE', bg: '#EDE7F6', desc: 'طَابِقِ الْبِطَاقَاتِ الْمُتَشَابِهَةَ وَدَرِّبْ ذَاكِرَتَكَ' },
   { id: 'image',    nameAr: 'تَعَرَّفْ عَلَى الصُّورَةِ',  icon: ImageIcon,  color: '#FF9F43', bg: '#FFF3E0', desc: 'اِخْتَرِ الصُّورَةَ الصَّحِيحَةَ مِنَ الْخِيَارَاتِ' },
   { id: 'dotdot',   nameAr: 'وَصْلُ النِّقَاطِ',           icon: Gamepad2,  color: '#54A0FF', bg: '#E3F2FD', desc: 'صِلِ النِّقَاطَ لِتَرْسُمَ الشَّكْلَ' },
-  { id: 'coloring', nameAr: 'التَّلْوِينُ',                 icon: Palette,   color: '#A29BFE', bg: '#EDE7F6', desc: 'لَوِّنِ الصُّوَرَ الْجَمِيلَةَ بِأَلْوَانِكَ' },
+  { id: 'coloring', nameAr: 'التَّلْوِينُ',                 icon: Palette,   color: '#00B894', bg: '#E8F5E9', desc: 'لَوِّنِ الصُّوَرَ الْجَمِيلَةَ بِأَلْوَانِكَ' },
 ];
 
 export default function ActivitiesPage() {
@@ -28,6 +30,7 @@ export default function ActivitiesPage() {
             <ChevronRight className="w-4 h-4" /> الْعَوْدَةُ لِلْأَنْشِطَةِ
           </Button>
           {activeActivity === 'quiz'     && <QuizActivity />}
+          {activeActivity === 'memory'   && <MemoryGameActivity />}
           {activeActivity === 'image'    && <ImageQuizActivity />}
           {activeActivity === 'dotdot'   && <DotToDotActivity />}
           {activeActivity === 'coloring' && <ColoringActivity />}

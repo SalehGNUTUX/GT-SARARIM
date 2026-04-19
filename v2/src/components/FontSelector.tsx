@@ -4,8 +4,9 @@ import { useStore } from '../store/useStore';
 import { motion, AnimatePresence } from 'motion/react';
 
 const BUILTIN_FONTS = [
-  { id: 'ubuntu-arabic', label: 'Ubuntu Arabic', sample: 'أَبْجَدٌ' },
-  { id: 'noto-arabic',   label: 'Noto Naskh',    sample: 'أَبْجَدٌ' },
+  { id: 'noto-arabic',      label: 'Noto Naskh',       sample: 'أَبْجَدٌ' },
+  { id: 'ubuntu-arabic',    label: 'Ubuntu Arabic',    sample: 'أَبْجَدٌ' },
+  { id: 'noto-sans-arabic', label: 'Noto Sans Arabic', sample: 'أَبْجَدٌ' },
 ];
 
 export function FontSelector() {
@@ -73,7 +74,7 @@ export function FontSelector() {
                     <div className="text-right">
                       <p className="text-xs font-bold text-[#4A4A4A] dark:text-white">{font.label}</p>
                       <p className="text-base leading-relaxed text-[#636E72] dark:text-[#A0A0A0] mt-0.5"
-                        style={{ fontFamily: font.id === 'ubuntu-arabic' ? "'Ubuntu Arabic'" : font.id === 'noto-arabic' ? "'Noto Naskh Arabic'" : `'${font.id}', 'Ubuntu Arabic', sans-serif` }}>
+                        style={{ fontFamily: font.id === 'ubuntu-arabic' ? "'Ubuntu Arabic'" : font.id === 'noto-arabic' ? "'Noto Naskh Arabic'" : font.id === 'noto-sans-arabic' ? "'Noto Sans Arabic'" : `'${font.id}', 'Ubuntu Arabic', sans-serif` }}>
                         {font.sample}
                       </p>
                     </div>

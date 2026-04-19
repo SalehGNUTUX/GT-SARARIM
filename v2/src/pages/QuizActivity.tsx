@@ -1,12 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Star, CheckCircle2, XCircle, Timer, RefreshCw, Zap, Sparkles, Trophy } from 'lucide-react';
-import { useStore } from '../store/useStore';
+import { Star, CheckCircle2, XCircle, RefreshCw, Zap, Sparkles, Trophy, ChevronDown, Lock, Timer, Check } from 'lucide-react';
+import { useStore, LEVELS } from '../store/useStore';
+
+const CATEGORY_NAMES: Record<string, string> = {
+  prophets:        'قِصَصُ الْأَنْبِيَاءِ',
+  companions:      'قِصَصُ الصَّحَابَةِ الْكِرَامِ',
+  imams:           'أَئِمَّةُ الْمَذَاهِبِ الْأَرْبَعَةِ',
+  islamic_figures: 'شَخْصِيَّاتٌ إِسْلَامِيَّةٌ',
+  quran:           'الْقُرْآنُ الْكَرِيمُ',
+  hadith:          'الْحَدِيثُ النَّبَوِيُّ',
+  fiqh:            'الْفِقْهُ وَالْعِبَادَاتُ',
+  history:         'التَّارِيخُ الْإِسْلَامِيُّ',
+  educational:     'تَعْلِيمِيٌّ عَامٌّ',
+  science:         'الْعُلُومُ',
+  animals:         'الْحَيَوَانَاتُ',
+  nature:          'الطَّبِيعَةُ',
+};
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ImageViewer } from '../components/ImageViewer';
 import confetti from 'canvas-confetti';
+
+const LEVEL_COLORS: Record<string, string> = { beginner:'#4CAF50', intermediate:'#FF9F43', advanced:'#54A0FF', expert:'#FF6B6B' };
+const LEVEL_NAMES: Record<string, string> = { beginner:'تَمْهِيدِيّ', intermediate:'مُبْتَدِئ', advanced:'مُتَوَسِّط', expert:'مُتَقَدِّم' };
+const AGE_LABELS: Record<string, string> = { 'all':'الْكُلُّ', '4-6':'4-6 سنوات', '6-8':'6-8 سنوات', '9-12':'9-12 سنة' };
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -24,8 +43,164 @@ function shuffleOptions(q: any): any {
   return { ...q, options: shuffled, correctAnswer: shuffled.indexOf(correct) };
 }
 
+// قائمة منسدلة للاختيار المتعدد
+function MultiSelectDropdown({ categories, selected, onChange }: {
+  categories: string[];
+  selected: string[];
+  onChange: (cats: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toggleCat = (cat: string) => {
+    if (selected.includes(cat)) onChange(selected.filter(c => c !== cat));
+    else onChange([...selected, cat]);
+  };
+  const toggleAll = () => onChange(selected.length === 0 ? [...categories] : []);
+  const allSelected = selected.length === 0;
+  const label = allSelected ? 'جَمِيعُ الْمَوَاضِيعِ' : selected.length === 1 ? (CATEGORY_NAMES[selected[0]] || selected[0]) : `${selected.length} مَوَاضِيعَ`;
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border-2 border-[#E5E5E5] dark:border-[#444] bg-white dark:bg-[#2a2a2a] text-sm font-bold dark:text-white transition-all hover:border-[#FF9F43]">
+        <span>{label}</span>
+        <ChevronDown className={`w-4 h-4 text-[#636E72] transition-transform ${open ? 'rotate-180' : ''}`}/>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 mt-1 w-full bg-white dark:bg-[#2a2a2a] border border-[#E5E5E5] dark:border-[#444] rounded-2xl shadow-xl overflow-hidden max-h-56 overflow-y-auto">
+            {/* اختيار الكل */}
+            <button
+              type="button"
+              onClick={toggleAll}
+              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold border-b border-[#E5E5E5] dark:border-[#333] transition-colors ${allSelected ? 'bg-[#FF9F43]/10 text-[#FF9F43]' : 'dark:text-white hover:bg-[#F5F5F5] dark:hover:bg-[#333]'}`}>
+              <span>جَمِيعُ الْمَوَاضِيعِ</span>
+              {allSelected && <Check className="w-4 h-4"/>}
+            </button>
+            {categories.map(cat => {
+              const active = selected.includes(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleCat(cat)}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors ${active ? 'bg-[#FF9F43]/10 text-[#FF9F43] font-bold' : 'dark:text-white hover:bg-[#F5F5F5] dark:hover:bg-[#333]'}`}>
+                  <span>{CATEGORY_NAMES[cat] || cat}</span>
+                  {active && <Check className="w-4 h-4"/>}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// شاشة اختيار الفلاتر قبل بدء المسابقة
+function QuizFilters({ questions, onStart }: { questions: any[]; onStart: (filtered: any[]) => void }) {
+  const { currentUser, getCurrentLevel } = useStore();
+  const [activeLevel, setActiveLevel] = useState('all');
+  const [activeAge, setActiveAge] = useState('all');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const userLevel = currentUser ? getCurrentLevel(currentUser.id) : 'beginner';
+  const levelOrder = ['beginner', 'intermediate', 'advanced', 'expert'];
+  const userLevelIdx = levelOrder.indexOf(userLevel);
+  const isLevelUnlocked = (l: string) => currentUser?.role === 'parent' || levelOrder.indexOf(l) <= userLevelIdx;
+
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    questions.forEach(q => { if (q.category) cats.add(q.category); });
+    return Array.from(cats).sort();
+  }, [questions]);
+
+  const filtered = useMemo(() => questions.filter(q => {
+    if (activeLevel !== 'all' && (q.level || 'beginner') !== activeLevel) return false;
+    if (activeAge !== 'all' && q.ageGroup !== 'all' && q.ageGroup !== activeAge) return false;
+    if (selectedCategories.length > 0 && !selectedCategories.includes(q.category)) return false;
+    return true;
+  }), [questions, activeLevel, activeAge, selectedCategories]);
+
+  return (
+    <div className="space-y-5 py-2">
+      <h2 className="text-xl font-black dark:text-white text-center">مُسَابَقَةُ الْمَعْلُومَاتِ</h2>
+
+      {/* فلتر المستوى */}
+      <div className="space-y-2">
+        <p className="text-sm font-bold text-[#636E72] dark:text-[#A0A0A0]">الْمُسْتَوَى</p>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setActiveLevel('all')}
+            className={`px-3 py-1.5 rounded-xl text-sm font-bold transition-all border-2 ${activeLevel==='all'?'bg-[#2D3436] text-white border-[#2D3436] dark:bg-white dark:text-black':'border-[#E5E5E5] dark:border-[#444] dark:text-white'}`}>
+            الْكُلُّ
+          </button>
+          {LEVELS.map(lv => (
+            <button key={lv.id} onClick={() => isLevelUnlocked(lv.id) && setActiveLevel(lv.id)}
+              className={`px-3 py-1.5 rounded-xl text-sm font-bold transition-all border-2 relative ${!isLevelUnlocked(lv.id)?'opacity-40 cursor-not-allowed':''} ${activeLevel===lv.id?'text-white border-transparent':'border-[#E5E5E5] dark:border-[#444] dark:text-white'}`}
+              style={activeLevel===lv.id?{backgroundColor:LEVEL_COLORS[lv.id],borderColor:LEVEL_COLORS[lv.id]}:{}}>
+              {lv.icon} {LEVEL_NAMES[lv.id]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* فلتر الفئة العمرية */}
+      <div className="space-y-2">
+        <p className="text-sm font-bold text-[#636E72] dark:text-[#A0A0A0]">الْفِئَةُ الْعُمُرِيَّةُ</p>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(AGE_LABELS).map(([k, v]) => (
+            <button key={k} onClick={() => setActiveAge(k)}
+              className={`px-3 py-1.5 rounded-xl text-sm font-bold transition-all border-2 ${activeAge===k?'bg-[#54A0FF] text-white border-[#54A0FF]':'border-[#E5E5E5] dark:border-[#444] dark:text-white'}`}>
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* فلتر الموضوع — قائمة منسدلة متعددة الاختيار */}
+      <div className="space-y-2">
+        <p className="text-sm font-bold text-[#636E72] dark:text-[#A0A0A0]">الْمَوْضُوعُ</p>
+        <MultiSelectDropdown categories={categories} selected={selectedCategories} onChange={setSelectedCategories}/>
+      </div>
+
+      <div className="bg-[#F0F4FF] dark:bg-[#1a2a4a] rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p className="font-bold dark:text-white">{filtered.length} سُؤَالٍ</p>
+          <p className="text-xs text-[#636E72] dark:text-[#A0A0A0]">تُخْلَطُ الْخِيَارَاتُ عِنْدَ التَّشْغِيلِ</p>
+        </div>
+        <ChevronDown className="w-5 h-5 text-[#636E72] rotate-[-90deg]"/>
+      </div>
+
+      <Button
+        disabled={filtered.length === 0}
+        onClick={() => onStart(filtered)}
+        className="w-full py-6 text-xl font-black bg-[#FF6B6B] hover:bg-[#ee5253] rounded-2xl gap-2">
+        <Trophy className="w-5 h-5"/> ابْدَأِ الْمُسَابَقَةَ ({filtered.length})
+      </Button>
+    </div>
+  );
+}
+
 export default function QuizActivity() {
   const { questions, currentUser, updateUser, localImages } = useStore();
+  const [started, setStarted] = useState(false);
   const [shuffled, setShuffled] = useState<any[]>([]);
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
@@ -39,13 +214,16 @@ export default function QuizActivity() {
   const ENCOURAGE = ['أَحْسَنْتَ! 🌟','مُمْتَازٌ! 🎉','رَائِعٌ! 💪','عَمَلٌ جَيِّدٌ! 👍','ذَكِيٌّ! 🧠','مَاشَاءَ اللَّهُ! 🤲'];
   const WRONG     = ['حَاوِلْ مُجَدَّدًا! 💪','لَا تَيْأَسْ! 🌟','قَرِيبٌ! 🎯','فَكِّرْ... 🤔'];
 
-  const load = () => {
-    setShuffled(shuffleArray([...questions]).map(shuffleOptions));
+  const load = (filtered?: any[]) => {
+    const pool = filtered || questions;
+    setShuffled(shuffleArray([...pool]).map(shuffleOptions));
     setIdx(0); setScore(0); setSelected(null); setIsCorrect(null);
     setStreak(0); setShowResult(false); setFeedback(''); setShowMotivation(null);
+    setStarted(true);
   };
 
-  useEffect(() => { if (questions.length) load(); }, [questions]);
+  // لا تبدأ تلقائياً — انتظر اختيار الفلاتر
+  useEffect(() => { /* لا شيء */ }, [questions]);
 
   const triggerConfetti = () => {
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
@@ -92,6 +270,9 @@ export default function QuizActivity() {
     return null;
   };
 
+  // عرض شاشة الفلاتر إذا لم تبدأ المسابقة بعد
+  if (!started) return <QuizFilters questions={questions} onStart={load} />;
+
   if (showResult) {
     const pct = Math.round((score / shuffled.length) * 100);
     return (
@@ -104,9 +285,14 @@ export default function QuizActivity() {
         <div className="bg-white dark:bg-[#222] p-5 rounded-3xl border-2 shadow-sm">
           <p className="text-[#4CAF50] font-black text-2xl">+{score * 15} نُقْطَةً</p>
         </div>
-        <Button className="w-full py-6 text-xl font-black bg-[#FF6B6B] hover:bg-[#ee5253] rounded-2xl gap-2" onClick={load}>
-          <RefreshCw className="w-5 h-5"/> مُحَاوَلَةٌ جَدِيدَةٌ
-        </Button>
+        <div className="flex gap-3">
+          <Button className="flex-1 py-4 font-black bg-[#FF6B6B] hover:bg-[#ee5253] rounded-2xl gap-2" onClick={() => load(shuffled)}>
+            <RefreshCw className="w-5 h-5"/> مُجَدَّدًا
+          </Button>
+          <Button variant="outline" className="flex-1 py-4 font-black rounded-2xl dark:border-[#444] dark:text-white" onClick={() => setStarted(false)}>
+            تَغْيِيرُ الْفِلْتَرِ
+          </Button>
+        </div>
       </motion.div>
     );
   }
@@ -137,10 +323,10 @@ export default function QuizActivity() {
       </AnimatePresence>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black dark:text-white">مُسَابَقَةُ الْمَعْلُومَاتِ</h2>
-        <div className="flex gap-2">
+        <button className="text-xl font-black dark:text-white hover:opacity-70" onClick={() => setStarted(false)}>مُسَابَقَةُ الْمَعْلُومَاتِ</button>
+        <div className="flex gap-2 items-center">
           <Badge className="bg-[#FF6B6B] text-white">{idx+1}/{shuffled.length}</Badge>
-          <Badge variant="outline" className="dark:border-[#444] dark:text-white text-[10px]">{q.category}</Badge>
+          <Badge variant="outline" className="dark:border-[#444] dark:text-white text-[10px]">{CATEGORY_NAMES[q.category] || q.category}</Badge>
           {streak>0 && <div className="flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full"><Zap className="w-3 h-3 text-orange-500"/><span className="text-xs font-bold text-orange-600 dark:text-orange-400">{streak}</span></div>}
         </div>
       </div>

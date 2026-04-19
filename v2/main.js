@@ -1,6 +1,11 @@
 const { app, BrowserWindow, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+
+// ─── مسار ثابت لبيانات المستخدم — يضمن الحفاظ على البيانات عبر تحديثات AppImage ───
+// يجب استدعاؤه قبل app.whenReady() تماماً
+app.setPath('userData', path.join(os.homedir(), '.gt-sararim-data'));
 
 // ─── إصلاح دعم الإدخال العربي (IBus/Fcitx) على Linux ───
 if (process.platform === 'linux') {

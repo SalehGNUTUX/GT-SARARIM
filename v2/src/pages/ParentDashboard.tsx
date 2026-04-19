@@ -3,7 +3,7 @@ import {
   Settings, Users, BookOpen, Brain, Gamepad2, ShieldCheck, Plus, Trash2, Edit2,
   RefreshCcw, Clock, Lock, Download, Upload, Key, ImageIcon, Music, Type,
   Eye, EyeOff, Volume2, AlertTriangle, CheckCircle2, X, ChevronDown, Tag,
-  Lightbulb, PlayCircle, RotateCcw, HelpCircle, Layers, LogIn, Palette
+  Lightbulb, PlayCircle, RotateCcw, HelpCircle, Layers, LogIn, Palette, Share2, Link2
 } from 'lucide-react';
 import { useStore, LEVELS } from '../store/useStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'motion/react';
-import { StoryCategory, CustomColoringImage, CustomColoringRegion } from '../types';
+import { StoryCategory, CustomColoringImage, CustomColoringRegion, UserProfile, LevelProgress } from '../types';
 
 const LEVEL_NAMES: Record<string, string> = { beginner:'تَمْهِيدِيّ', intermediate:'مُبْتَدِئ', advanced:'مُتَوَسِّط', expert:'مُتَقَدِّم' };
 const AGE_GROUPS = [{ v:'4-6', l:'4-6 سَنَوَاتٍ' },{ v:'6-8', l:'6-8 سَنَوَاتٍ' },{ v:'9-12', l:'9-12 سَنَةً' },{ v:'all', l:'الْكُلُّ' }];
@@ -120,6 +120,154 @@ function PreviewModal({ item, type, onClose }: { item:any; type:string; onClose:
   );
 }
 
+// ───────── Child Activity Modal ─────────
+function ChildActivityModal({ child, onClose }: { child: UserProfile; onClose: () => void }) {
+  const levelProgress = useStore(s => s.levelProgress);
+  const stories = useStore(s => s.stories);
+  const puzzles = useStore(s => s.puzzles);
+  const localImages = useStore(s => s.localImages);
+
+  const currentLevel = [...LEVELS].reverse().find(l => child.points >= l.requiredPoints) || LEVELS[0];
+  const nextLevel = LEVELS[LEVELS.findIndex(l => l.id === currentLevel.id) + 1];
+  const progressPct = nextLevel
+    ? Math.min(100, Math.round(((child.points - currentLevel.requiredPoints) / (nextLevel.requiredPoints - currentLevel.requiredPoints)) * 100))
+    : 100;
+
+  const childProgress = LEVELS.map(level => ({
+    level,
+    data: (levelProgress[`${child.id}_${level.id}`] || { completedStories: [], completedPuzzles: [], completedActivities: [], quizScore: 0, isCompleted: false }) as LevelProgress,
+  }));
+
+  const allStories   = new Set(childProgress.flatMap(lp => lp.data.completedStories));
+  const allPuzzles   = new Set(childProgress.flatMap(lp => lp.data.completedPuzzles));
+  const allActivities = new Set(childProgress.flatMap(lp => lp.data.completedActivities));
+
+  const lastActive = new Date(child.lastActive);
+  const diffMin = Math.floor((Date.now() - lastActive.getTime()) / 60000);
+  const lastActiveStr = diffMin < 60
+    ? `قَبْلَ ${diffMin} دَقِيقَةً`
+    : diffMin < 1440
+    ? `قَبْلَ ${Math.floor(diffMin / 60)} سَاعَةً`
+    : lastActive.toLocaleDateString('ar-SA');
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-md dark:bg-[#222] dark:border-[#333]">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="dark:text-white">نَشَاطُ {child.name}</DialogTitle>
+            <Button variant="ghost" size="icon" onClick={onClose} className="dark:text-white"><X className="w-4 h-4"/></Button>
+          </div>
+        </DialogHeader>
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+          {/* Profile header */}
+          <div className="flex items-center gap-4 p-4 bg-[#F8F9FA] dark:bg-[#2A2A2A] rounded-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-[#4CAF50]/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+              {child.avatar && localImages[child.avatar]
+                ? <img src={localImages[child.avatar].data} className="w-full h-full object-cover" alt=""/>
+                : <span className="text-3xl">{child.name.charAt(0)}</span>}
+            </div>
+            <div>
+              <p className="font-black text-lg dark:text-white">{child.name}</p>
+              <p className="text-sm text-[#636E72]">{child.ageGroup} سَنَةً{child.grade ? ` • ${child.grade}` : ''}</p>
+              <p className="text-xs text-[#A0A0A0]">آخِرُ نَشَاطٍ: {lastActiveStr}</p>
+            </div>
+          </div>
+
+          {/* Points + Level */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-[#4CAF50]/10 rounded-2xl text-center">
+              <p className="text-2xl font-black text-[#4CAF50]">{child.points}</p>
+              <p className="text-xs text-[#636E72]">نُقْطَةٌ إِجْمَالِيَّةٌ</p>
+            </div>
+            <div className="p-3 rounded-2xl text-center" style={{ backgroundColor: currentLevel.color + '20' }}>
+              <p className="text-2xl">{currentLevel.icon}</p>
+              <p className="text-xs font-bold" style={{ color: currentLevel.color }}>{currentLevel.nameAr}</p>
+            </div>
+          </div>
+
+          {/* Progress to next level */}
+          {nextLevel && (
+            <div className="p-3 bg-[#F8F9FA] dark:bg-[#2A2A2A] rounded-2xl space-y-2">
+              <div className="flex justify-between text-xs text-[#636E72]">
+                <span>{currentLevel.nameAr}</span>
+                <span>{nextLevel.nameAr} ({nextLevel.requiredPoints} نُقْطَةً)</span>
+              </div>
+              <div className="w-full bg-[#E5E5E5] dark:bg-[#444] rounded-full h-2.5">
+                <div className="h-2.5 rounded-full transition-all" style={{ width: `${progressPct}%`, backgroundColor: currentLevel.color }}/>
+              </div>
+              <p className="text-xs text-center text-[#636E72]">{nextLevel.requiredPoints - child.points} نُقْطَةً لِلْمُسْتَوَى التَّالِي</p>
+            </div>
+          )}
+
+          {/* Play time + achievements */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-[#FF9F43]/10 rounded-2xl">
+              <p className="text-xl font-black text-[#FF9F43]">{child.playTimeToday || 0} دَقِيقَةً</p>
+              <p className="text-xs text-[#636E72]">وَقْتُ اللَّعِبِ الْيَوْمَ</p>
+              {child.customTimeLimitEnabled && child.dailyTimeLimit != null && (
+                <p className="text-[10px] text-[#A0A0A0]">الْحَدُّ: {child.dailyTimeLimit} دَقِيقَةً</p>
+              )}
+            </div>
+            <div className="p-3 bg-[#A29BFE]/10 rounded-2xl">
+              <p className="text-xl font-black text-[#A29BFE]">{child.achievements?.length || 0}</p>
+              <p className="text-xs text-[#636E72]">إِنْجَازٌ مُحَقَّقٌ</p>
+            </div>
+          </div>
+
+          {/* Overall activity */}
+          <div className="space-y-2">
+            <p className="font-bold dark:text-white text-sm">مُلَخَّصُ النَّشَاطَاتِ</p>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="p-2 bg-[#F8F9FA] dark:bg-[#2A2A2A] rounded-xl text-center">
+                <p className="text-lg font-black text-[#FF9F43]">{allStories.size}/{stories.length}</p>
+                <p className="text-[10px] text-[#636E72]">قِصَّةٌ</p>
+              </div>
+              <div className="p-2 bg-[#F8F9FA] dark:bg-[#2A2A2A] rounded-xl text-center">
+                <p className="text-lg font-black text-[#54A0FF]">{allPuzzles.size}/{puzzles.length}</p>
+                <p className="text-[10px] text-[#636E72]">لُغْزٌ</p>
+              </div>
+              <div className="p-2 bg-[#F8F9FA] dark:bg-[#2A2A2A] rounded-xl text-center">
+                <p className="text-lg font-black text-[#A29BFE]">{allActivities.size}</p>
+                <p className="text-[10px] text-[#636E72]">نَشَاطٌ</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Per-level breakdown */}
+          <div className="space-y-2">
+            <p className="font-bold dark:text-white text-sm">التَّقَدُّمُ بِالْمُسْتَوَيَاتِ</p>
+            {childProgress.map(({ level, data }) => {
+              const hasActivity = data.completedStories.length > 0 || data.completedPuzzles.length > 0 || data.completedActivities.length > 0 || data.quizScore > 0;
+              return (
+                <div key={level.id} className="p-3 rounded-2xl border-2 dark:border-[#333]"
+                  style={{ borderColor: hasActivity ? level.color + '60' : undefined }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span>{level.icon}</span>
+                      <span className="font-bold text-sm dark:text-white">{level.nameAr}</span>
+                    </div>
+                    {data.isCompleted && (
+                      <Badge className="text-[10px] text-white" style={{ backgroundColor: level.color }}>مُكْتَمِلٌ ✓</Badge>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs text-[#636E72]">
+                    <span>📖 {data.completedStories.length} قِصَّةٌ</span>
+                    <span>🧩 {data.completedPuzzles.length} لُغْزٌ</span>
+                    <span>🎯 {data.completedActivities.length} نَشَاطٌ</span>
+                    {data.quizScore > 0 && <span>📝 {data.quizScore} نُقْطَةٌ (اخْتِبَارٌ)</span>}
+                  </div>
+                  {!hasActivity && <p className="text-xs text-[#B2BEC3] mt-1">لَا نَشَاطَ بَعْدُ</p>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ParentDashboard() {
   const store = useStore();
   const {
@@ -127,7 +275,7 @@ export default function ParentDashboard() {
     addUser, updateUser, deleteUser,
     addStory, updateStory,
     addQuestion, updateQuestion,
-    updateSettings, resetToDefault, exportData,
+    updateSettings, resetToDefault, exportData, shareBackupData,
     addLocalImage, localImages, deleteLocalImage,
     backgroundSounds, addCustomSound, deleteSound, restoreSound, addFont, removeFont,
     addStoryCategory, updateStoryCategory, deleteStoryCategory,
@@ -151,6 +299,36 @@ export default function ParentDashboard() {
 
   // ── Undo ──
   const [undoToast, setUndoToast] = useState<{id:string;msg:string;pendingId:string}|null>(null);
+  // ── Import result notification ──
+  const [importMsg, setImportMsg] = useState<{ok:boolean;text:string}|null>(null);
+
+  // ── Share app link ──
+  const APP_URL = 'https://salehgnutux.github.io/GT-SARARIM/';
+  const handleShareApp = async () => {
+    const text = '🌟 جَرِّبْ تَطْبِيقَ GT-SARARIM التَّعْلِيمِيَّ لِأَطْفَالِكَ! قِصَصٌ إِسْلَامِيَّةٌ وَأَلْغَازٌ وَأَسْئِلَةٌ تَفَاعُلِيَّةٌ. مَجَّانِيٌّ وَبِدُونِ إِنْتَرْنَتَ بَعْدَ التَّنْزِيلِ 📱';
+    // محاولة Capacitor Share أولاً (Android)
+    try {
+      const { Capacitor } = await import('@capacitor/core');
+      if (Capacitor.isNativePlatform()) {
+        const { Share } = await import('@capacitor/share');
+        await Share.share({ title: 'GT-SARARIM', text: `${text}\n${APP_URL}`, url: APP_URL, dialogTitle: 'مشاركة رابط التطبيق' });
+        return;
+      }
+    } catch (e: any) { if (e?.name === 'AbortError') return; }
+    // Web Share API
+    if (navigator.share) {
+      try { await navigator.share({ title: 'GT-SARARIM', text, url: APP_URL }); return; }
+      catch (e: any) { if (e?.name === 'AbortError') return; }
+    }
+    // Fallback: نسخ الرابط
+    try {
+      await navigator.clipboard.writeText(`${text}\n${APP_URL}`);
+      setImportMsg({ ok: true, text: 'تَمَّ نَسْخُ الرَّابِطِ!' });
+      setTimeout(() => setImportMsg(null), 3000);
+    } catch {
+      window.open(APP_URL, '_blank');
+    }
+  };
 
   // ── Password change ──
   const [passDialog, setPassDialog] = useState(false);
@@ -250,6 +428,9 @@ export default function ParentDashboard() {
 
   // ── Preview ──
   const [preview, setPreview] = useState<{item:any;type:string}|null>(null);
+
+  // ── Child activity modal ──
+  const [activityChild, setActivityChild] = useState<UserProfile|null>(null);
 
   // ── Reset dialog ──
   const [resetDialog, setResetDialog] = useState(false);
@@ -554,39 +735,33 @@ export default function ParentDashboard() {
   };
 
   // ── CUSTOM COLORING IMAGE ──
+
   function parseSvgFile(svgText: string): { viewBox: string; svgContent: string; regionCount: number } {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgText, 'image/svg+xml');
     const svgEl = doc.querySelector('svg');
     if (!svgEl) return { viewBox: '0 0 200 200', svgContent: '', regionCount: 0 };
 
-    const viewBox = svgEl.getAttribute('viewBox') || '0 0 200 200';
-
-    // Tag every clickable path/shape with a data-region-id for event delegation
-    const shapes = Array.from(doc.querySelectorAll('path, rect, circle, ellipse, polygon'));
-    shapes.forEach((el, i) => {
-      el.setAttribute('data-region-id', `r${i}`);
-      el.setAttribute('style', `cursor:pointer;transition:fill 0.2s;${el.getAttribute('style') || ''}`);
-      // Default Potrace fill is black (#000000) — keep it; coloring replaces it on click
-    });
-
-    // Make the SVG itself responsive
+    let viewBox = svgEl.getAttribute('viewBox');
+    if (!viewBox) {
+      const w = parseFloat(svgEl.getAttribute('width') || '200');
+      const h = parseFloat(svgEl.getAttribute('height') || '200');
+      viewBox = `0 0 ${w} ${h}`;
+      svgEl.setAttribute('viewBox', viewBox);
+    }
     svgEl.setAttribute('width', '100%');
     svgEl.setAttribute('height', '100%');
     svgEl.removeAttribute('xmlns:xlink');
 
-    // Serialize back to string — browser applies transforms correctly when rendered inline
-    const serializer = new XMLSerializer();
-    const svgContent = serializer.serializeToString(svgEl);
-
-    return { viewBox, svgContent, regionCount: shapes.length };
+    const svgContent = new XMLSerializer().serializeToString(svgEl);
+    return { viewBox, svgContent, regionCount: 1 };
   }
 
   const uploadColoringImage = async () => {
     if (!coloringName.trim() || !coloringFile) return;
     const text = await coloringFile.text();
     const { viewBox, svgContent, regionCount } = parseSvgFile(text);
-    if (regionCount === 0) { alert('لَمْ يُعْثَرْ عَلَى أَشْكَالٍ فِي الْمَلَفِّ'); return; }
+    if (regionCount === 0) { setImportMsg({ ok: false, text: 'لَمْ يُعْثَرْ عَلَى أَشْكَالٍ قَابِلَةٍ لِلتَّلْوِينِ فِي الْمَلَفِّ' }); setTimeout(() => setImportMsg(null), 4000); return; }
     const img: CustomColoringImage = {
       id: `coloring_${Date.now()}`,
       nameAr: coloringName.trim(),
@@ -605,19 +780,23 @@ export default function ParentDashboard() {
       try {
         const data = JSON.parse(e.target?.result as string);
         store.importData(data);
-        alert("تَمَّ اسْتِيرَادُ النُّسْخَةِ الِاحْتِيَاطِيَّةِ بِنَجَاحٍ ✓");
+        setImportMsg({ ok: true, text: 'تَمَّ اسْتِيرَادُ النُّسْخَةِ الِاحْتِيَاطِيَّةِ بِنَجَاحٍ ✓' });
       } catch {
-        alert("خَطَأٌ: الْمَلَفُّ غَيْرُ صَالِحٍ");
+        setImportMsg({ ok: false, text: 'خَطَأٌ: الْمَلَفُّ غَيْرُ صَالِحٍ' });
       }
+      setTimeout(() => setImportMsg(null), 4000);
     };
     reader.readAsText(file);
   };
 
   const resetFont = (fontFamily: string) => {
     const cf = settings.fontSettings.customFonts || [];
-    if (fontFamily === 'ubuntu-arabic' || fontFamily === 'noto-arabic') {
+    if (['ubuntu-arabic', 'noto-arabic', 'noto-sans-arabic'].includes(fontFamily)) {
       updateSettings({ fontSettings: { ...settings.fontSettings, fontFamily } });
-      document.documentElement.style.setProperty('--app-font-override', fontFamily === 'noto-arabic' ? "'Noto Naskh Arabic', serif" : '');
+      const override = fontFamily === 'noto-arabic' ? "'Noto Naskh Arabic', serif"
+                     : fontFamily === 'noto-sans-arabic' ? "'Noto Sans Arabic', sans-serif"
+                     : '';
+      document.documentElement.style.setProperty('--app-font-override', override);
     } else {
       // Activate a custom font from the list
       const font = cf.find((f: any) => f.id === fontFamily);
@@ -724,19 +903,43 @@ export default function ParentDashboard() {
   return (
     <div className="space-y-5 pb-4">
       <AnimatePresence>{undoToast && <UndoToast key={undoToast.id} message={undoToast.msg} onUndo={handleUndo} onClose={()=>setUndoToast(null)}/>}</AnimatePresence>
+      <AnimatePresence>
+        {importMsg && (
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:20}}
+            className={`fixed bottom-24 left-4 right-4 max-w-md mx-auto rounded-2xl px-4 py-3 flex items-center gap-3 z-[100] shadow-2xl text-white ${importMsg.ok ? 'bg-[#00B894]' : 'bg-[#FF6B6B]'}`}>
+            <span className="text-lg">{importMsg.ok ? '✓' : '✗'}</span>
+            <span className="flex-1 text-sm font-medium">{importMsg.text}</span>
+            <button onClick={() => setImportMsg(null)} className="opacity-70 hover:opacity-100 text-lg leading-none">×</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {preview && <PreviewModal item={preview.item} type={preview.type} onClose={()=>setPreview(null)}/>}
+      {activityChild && <ChildActivityModal child={activityChild} onClose={()=>setActivityChild(null)}/>}
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black dark:text-white flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-[#FF6B6B]"/>لَوْحَةُ الْوَالِدَيْنِ</h2>
-        <div className="flex gap-2">
-          <>
-          <label className="inline-flex items-center gap-1 cursor-pointer border rounded-xl px-3 py-1.5 text-sm font-medium dark:border-[#444] dark:text-white hover:bg-accent transition-colors">
-            <Upload className="w-4 h-4"/>اسْتِيرَادٌ
+      <div className="space-y-3">
+        <h2 className="text-xl font-black dark:text-white flex items-center justify-center gap-2"><ShieldCheck className="w-5 h-5 text-[#FF6B6B]"/>لَوْحَةُ الْوَالِدَيْنِ</h2>
+        <div className="grid grid-cols-5 gap-1.5">
+          <label className="inline-flex flex-col items-center justify-center gap-1 cursor-pointer border rounded-xl py-2 px-1 text-xs font-medium dark:border-[#444] dark:text-white hover:bg-accent transition-colors text-center" title="اسْتِيرَادُ نُسْخَةٍ احْتِيَاطِيَّةٍ">
+            <Upload className="w-4 h-4"/>
+            <span className="leading-tight">اسْتِيرَادٌ</span>
             <input type="file" accept=".json,application/json" className="hidden" onChange={e=>{const f=e.target.files?.[0]; if(f) handleImport(f); e.target.value='';}}/>
           </label>
-          <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl" onClick={()=>exportData()}><Download className="w-4 h-4"/>تَصْدِيرٌ</Button>
-        </>
-          <Button variant="outline" size="sm" className="dark:border-[#444] dark:text-white gap-1 rounded-xl text-[#FF6B6B] border-[#FF6B6B]/50" onClick={()=>setResetDialog(true)}><RefreshCcw className="w-4 h-4"/>إِعَادَةٌ</Button>
+          <button onClick={()=>exportData()} title="تَصْدِيرُ نُسْخَةٍ احْتِيَاطِيَّةٍ"
+            className="flex flex-col items-center justify-center gap-1 border rounded-xl py-2 px-1 text-xs font-medium dark:border-[#444] dark:text-white hover:bg-accent transition-colors">
+            <Download className="w-4 h-4"/><span className="leading-tight">تَصْدِيرٌ</span>
+          </button>
+          <button onClick={()=>shareBackupData()} title="مُشَارَكَةُ النُّسْخَةِ الِاحْتِيَاطِيَّةِ"
+            className="flex flex-col items-center justify-center gap-1 border rounded-xl py-2 px-1 text-xs font-medium dark:border-[#444] text-[#54A0FF] border-[#54A0FF]/50 hover:bg-[#54A0FF]/10 transition-colors">
+            <Share2 className="w-4 h-4"/><span className="leading-tight">مُشَارَكَةٌ</span>
+          </button>
+          <button onClick={handleShareApp} title="مُشَارَكَةُ رَابِطِ الْبَرْنَامَجِ"
+            className="flex flex-col items-center justify-center gap-1 border rounded-xl py-2 px-1 text-xs font-medium dark:border-[#444] text-[#00B894] border-[#00B894]/50 hover:bg-[#00B894]/10 transition-colors">
+            <Link2 className="w-4 h-4"/><span className="leading-tight">الْبَرْنَامَجُ</span>
+          </button>
+          <button onClick={()=>setResetDialog(true)} title="إِعَادَةُ الضَّبْطِ الِافْتِرَاضِيِّ"
+            className="flex flex-col items-center justify-center gap-1 border rounded-xl py-2 px-1 text-xs font-medium dark:border-[#444] text-[#FF6B6B] border-[#FF6B6B]/50 hover:bg-[#FF6B6B]/10 transition-colors">
+            <RefreshCcw className="w-4 h-4"/><span className="leading-tight">إِعَادَةٌ</span>
+          </button>
         </div>
       </div>
 
@@ -755,7 +958,7 @@ export default function ParentDashboard() {
             <Plus className="w-5 h-5"/>إِضَافَةُ طِفْلٍ جَدِيدٍ
           </Button>
           {users.filter(u=>u.role==='child').map(child=>(
-            <Card key={child.id} className="rounded-2xl border-2 dark:border-[#333] dark:bg-[#222]">
+            <Card key={child.id} className="rounded-2xl border-2 dark:border-[#333] dark:bg-[#222] cursor-pointer hover:border-[#4CAF50]/50 transition-colors" onClick={()=>setActivityChild(child)}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-[#4CAF50]/10 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -765,12 +968,11 @@ export default function ParentDashboard() {
                     <p className="font-black dark:text-white">{child.name}</p>
                     <p className="text-xs text-[#636E72] dark:text-[#A0A0A0]">{child.ageGroup} • {child.points} نُقْطَةً</p>
                     {child.grade && <p className="text-xs text-[#636E72]">{child.grade}</p>}
-                    {/* وقت اللعب اليوم مع زر رفع الحظر */}
                     {(child.playTimeToday || 0) > 0 && (
                       <div className="flex items-center gap-2 mt-1">
                         <p className="text-xs text-[#FF9F43]">🕐 {child.playTimeToday} دَقِيقَةٌ الْيَوْمَ</p>
                         <button
-                          onClick={() => updateUser(child.id, { playTimeToday: 0 })}
+                          onClick={(e) => { e.stopPropagation(); updateUser(child.id, { playTimeToday: 0 }); }}
                           className="text-[10px] px-2 py-0.5 bg-[#4CAF50]/10 text-[#4CAF50] rounded-full hover:bg-[#4CAF50]/20 transition-colors">
                           رَفْعُ الْحَظْرِ
                         </button>
@@ -778,8 +980,8 @@ export default function ParentDashboard() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" className="dark:text-white" onClick={()=>openChild(child)}><Edit2 className="w-4 h-4"/></Button>
-                    <Button variant="ghost" size="icon" className="text-[#FF6B6B]" onClick={()=>safeDelete('user', child.id, child, child.name)}><Trash2 className="w-4 h-4"/></Button>
+                    <Button variant="ghost" size="icon" className="dark:text-white" onClick={(e)=>{e.stopPropagation();openChild(child);}}><Edit2 className="w-4 h-4"/></Button>
+                    <Button variant="ghost" size="icon" className="text-[#FF6B6B]" onClick={(e)=>{e.stopPropagation();safeDelete('user', child.id, child, child.name);}}><Trash2 className="w-4 h-4"/></Button>
                   </div>
                 </div>
               </CardContent>
@@ -1059,8 +1261,9 @@ export default function ParentDashboard() {
             <CardContent className="space-y-3">
               {/* Built-in fonts */}
               {[
-                { id:'ubuntu-arabic',  label:'Ubuntu Arabic',      font:"'Ubuntu Arabic', sans-serif" },
-                { id:'noto-arabic',    label:'Noto Naskh Arabic',  font:"'Noto Naskh Arabic', serif"  },
+                { id:'ubuntu-arabic',    label:'Ubuntu Arabic',      font:"'Ubuntu Arabic', sans-serif"    },
+                { id:'noto-arabic',      label:'Noto Naskh Arabic',  font:"'Noto Naskh Arabic', serif"     },
+                { id:'noto-sans-arabic', label:'Noto Sans Arabic',   font:"'Noto Sans Arabic', sans-serif" },
               ].map(f => {
                 const active = settings.fontSettings.fontFamily === f.id;
                 return (
